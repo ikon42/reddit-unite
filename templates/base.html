@@ -1,9 +1,50 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Reddit Unite!</title>
-		<link
-			rel="stylesheet"
-			type="text/css"
-			href="/static/css/reset-min.css"
-		/>
+    <head>
+        <title>Reddit Unite!</title>
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="/static/css/reset-min.css"
+        />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="/static/css/style.css"
+        />
+    </head>
+    <body>
+        <div class="site-header">
+            <h1 title="A Reddit Unite project">Connection Machine</h1>
+            <h2>By indieinvader</h2>
+        </div>
+        <div class="main block">
+        {% block main %}{% endblock %}
+        </div>
+        <div class="action block">
+            <h1>Get Connected!</h1>
+            <ul>
+                <h1>List one</h1>
+                <li>A link</li>
+                <li>Another link</li>
+                <li>Some more linking action</li>
+                <li>Link!</li>
+            </ul>
+            <ul>
+                <h1>List twoo</h1>
+                <li>More link</li>
+                <li>Link</li>
+                <li>Link</li>
+                <li>Link</li>
+                <li>Link</li>
+            </ul>
+        </div>
+        <ul class="footbar">
+            <h1>Reddit Unite on:</h1>
+            <li><a href="http://www.reddit.com/r/unite">reddit</a></li>
+            <li>other site</li>
+            <li>wiki</li>
+            <li>mailing list</li>
+        </ul>
+    </body>
+</html>

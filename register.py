@@ -14,7 +14,7 @@ class redir:
 
 class index:
     def GET(self):
-        return 'Register coming soon!'
+        return 'Registration coming soon!'
 
 
 app = web.application(urls, locals())

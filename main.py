@@ -19,7 +19,7 @@ urls = (
 class home:
     def GET(self):
         t = mget(key='home', namespace='templates')
-        if t is not None:
+        if False:#t is not None:
             return t
         else:
             t = template.env.get_template('home.html').render()
