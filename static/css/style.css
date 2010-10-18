@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------------
-	Reddit Unite Connection Machine
+	Connection Machine
 --------------------------------------------------------------------- */
 body {
 	width: 66%;
@@ -7,12 +7,6 @@ body {
 }
 /* Blocks
 --------------------------------------------------------------------- */
-.block {
-
-}
-.main {
-	
-}
 .action {
 	margin-top: 15px;
 }
@@ -21,8 +15,10 @@ body {
 .site-header {
 	text-align: center;
 }
-.site-header h1 {
+.site-header h1 a {
 	font-size: 32px;
+	color: black;
+	text-decoration: none;
 }
 h1, h2, h3, h4, h5, h6 {
 	font-family: sans-serif;
@@ -53,6 +49,7 @@ h1, h2, h3, h4, h5, h6 {
 	padding-top: 24px;
 }
 .footbar > * {
+	font-size: 14px;
 	display: inline-block;
 }
 /* Footer to side if too wide
@@ -77,6 +74,6 @@ h1, h2, h3, h4, h5, h6 {
 	}
 	.action ul {
 		display: block;
-		margin-right: 0;
+		margin-top: 15px; margin-right: 0;
 	}
 }

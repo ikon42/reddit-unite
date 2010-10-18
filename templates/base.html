@@ -15,36 +15,54 @@
     </head>
     <body>
         <div class="site-header">
-            <h1 title="A Reddit Unite project">Connection Machine</h1>
-            <h2>By indieinvader</h2>
+            <h1 title="A Reddit Unite project"><a href="/">Connection Machine</a></h1>
+            <h2 title="carlos AT projectbeyond.org">By indieinvader</h2>
         </div>
-        <div class="main block">
-        {% block main %}{% endblock %}
-        </div>
+        <div class="main block">{% block main %}{% endblock %}</div>
         <div class="action block">
             <h1>Get Connected!</h1>
             <ul>
-                <h1>List one</h1>
-                <li>A link</li>
-                <li>Another link</li>
-                <li>Some more linking action</li>
-                <li>Link!</li>
+                <h1>Hey, {% if logged_in %}<a title="Your public profile" href="/user/{{ user.id }}">{{ user.nickname }}</a>{% else%}you{% endif %}!</h1>
+                {% if logged_in %}
+                
+                <li>
+                    <a href="/user/profile">Edit profile</a>
+                </li>
+                <li>
+                    <a href="/user/preferences">Preferences</a>
+                </li>
+                {% endif %}
+                <li>
+                    <a href="{{ log_in_out }}">{% if logged_in %}Log out{% else %}Log in/register{% endif %}</a>
+                </li>
             </ul>
             <ul>
-                <h1>List twoo</h1>
-                <li>More link</li>
-                <li>Link</li>
-                <li>Link</li>
-                <li>Link</li>
-                <li>Link</li>
+                <h1>More Info</h1>
+                <li>Global Map</li>
+                <li>Locales</li>
+                <li>People in Your Area</li>
+            </ul>
+            <ul>
+                <h1>More Reddit Unite:</h1>
+                <li>
+                    <a href="http://www.reddit.com/r/unite">reddit</a>
+                </li>
+                <li>
+                    <a href="http://unite-reddit.org/">home</a>
+                </li>
+                <li>
+                    <a href="http://wiki.unite-reddit.org">wiki</a>
+                </li>
+                <li>
+                    <a href="http://github.com/indieinvader/reddit-unite">GitHub</a>
+                </li>
             </ul>
         </div>
         <ul class="footbar">
-            <h1>Reddit Unite on:</h1>
-            <li><a href="http://www.reddit.com/r/unite">reddit</a></li>
-            <li>other site</li>
-            <li>wiki</li>
-            <li>mailing list</li>
+            <h1>
+            All user data is private and will not be realeased
+            without their consent.
+            </h1>
         </ul>
     </body>
 </html>

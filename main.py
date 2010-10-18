@@ -2,29 +2,22 @@
 
 from sys import path
 
-from google.appengine.api.memcache import get as mget
-from google.appengine.api.memcache import set as mset
-
 path.insert(0, 'lib/')
 
 import web
-import register
+import user
 import template
+import util
 
 urls = (
-    '/register', register.app,
-    '/', 'home',
+    '/user', user.app,
+    '/', 'index',
 )
 
-class home:
+class index:
     def GET(self):
-        t = mget(key='home', namespace='templates')
-        if False:#t is not None:
-            return t
-        else:
-            t = template.env.get_template('home.html').render()
-            mset(key='home', value=t, time=60, namespace='templates')
-            return t
+        t = template.env.get_template('home.html')
+        return t.render(util.data())
 
 
 app = web.application(urls, locals())
