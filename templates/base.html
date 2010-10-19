@@ -18,15 +18,12 @@
             <h1>Get Connected!</h1>
             <ul>
                 <h1>Hey, {% if logged_in %}<a title="Your public profile" href="/user/{{ user.id }}">{{ user.nickname }}</a>{% else%}you{% endif %}!</h1>
-                {% if logged_in %}
-                
-                <li>
+                {% if logged_in %}<li>
                     <a href="/user/profile">Edit profile</a>
                 </li>
                 <li>
                     <a href="/user/preferences">Preferences</a>
-                </li>
-                {% endif %}
+                </li>{% endif %}
                 <li>
                     <a href="{{ log_in_out }}">{% if logged_in %}Log out{% else %}Log in/register{% endif %}</a>
                 </li>
@@ -36,6 +33,7 @@
                 <li>Global Map</li>
                 <li>Locales</li>
                 <li>People in Your Area</li>
+                <li>FAQ</li>
             </ul>
             <ul>
                 <h1>More Reddit Unite:</h1>
@@ -55,8 +53,8 @@
         </div>
         <ul class="footbar">
             <h1>
-            All user data is private and will not be realeased
-            without their consent.
+            All data is private and will not be realeased without user
+            consent.
             </h1>
         </ul>
     </body>

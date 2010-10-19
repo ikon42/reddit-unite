@@ -41,14 +41,11 @@ def data(**kwargs):
         data['logged_in'] = True
         data['user']['id'] = user.user_id()
         try:
-            nickname = mget(key=user.user_id(), namespace='users')
+            nickname = mget(key=user.user_id(), namespace='usernames')
             if nickname is None:
-                user_prefs = query = db.GqlQuery(
-                    "SELECT * FROM User where id = :1",
-                    user.user_id()
-                ).fetch(1)
+                user_prefs = User.all().filter('id', user.user_id()).fetch(1)
                 nickname = user_prefs[0].nickname
-                if not mset(key=user.user_id(), value=nickname, time=10, namespace='users'):
+                if not mset(key=user.user_id(), value=nickname, time=10, namespace='usernames'):
                     logging.error('Could not set memcache value!')
             data['user']['nickname'] = nickname
         except:
