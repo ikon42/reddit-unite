@@ -5,12 +5,14 @@ from sys import path
 path.insert(0, 'lib/')
 
 import web
-import user
+import user_app as user
+import login
 import template
 import util
 
 urls = (
     '/user', user.app,
+    '/login', login.app,
     '/', 'index',
 )
 

@@ -8,10 +8,12 @@ from google.appengine.api.memcache import set as mset
 from google.appengine.ext import db
 
 def data(**kwargs):
-    data = {'user': {}}
+    data = {
+        'user': {},
+        'log_in_out': '/login',
+    }
     user = users.get_current_user()
     if user:
-        data['log_in_out'] = users.create_logout_url('/')
         data['logged_in'] = True
         data['user']['id'] = user.user_id()
         try:
@@ -24,7 +26,5 @@ def data(**kwargs):
             data['user']['nickname'] = nickname
         except:
             data['user']['nickname'] = user.nickname()
-    else:
-        data['log_in_out'] = users.create_login_url('/')
     data.update(kwargs)
     return data

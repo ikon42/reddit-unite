@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Reddit Unite! -> Log in</title>
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="/static/css/style.css"
+        />
+    </head>
+    <body>
+        <div class="site-header">
+            <h1>Select your OpenID Provider</h1>
+        </div>
+        <ul class="id block">
+            <li>
+                <a href="{{ login.google }}">Google</a>
+            </li>
+            <li>
+                <a href="{{ login.yahoo }}">Yahoo</a>
+            </li>
+            <li>
+                <form method="GET" action="">
+                    <input type="text" name="provider" placeholder="Your OpenID Provider" />
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+        </ul>
+        <ul class="footbar">
+            <h1>-</h1>
+        </ul>
+    </body>
+</html>
