@@ -14,6 +14,7 @@ urls = (
 openid_providers = (
     'Google.com/accounts/o8/id',
     'Yahoo.com',
+    'Myopenid.com'
 )
 
 class index:
