@@ -6,7 +6,15 @@ import util
 
 from web import form
 
+from models import User
+from models import UserMeta
+
 from google.appengine.api import users
+
+from google.appengine.api.memcache import get as mget
+from google.appengine.api.memcache import set as mset
+
+from google.appengine.ext import db
 
 urls = (
     '/profile', 'profile',
@@ -18,6 +26,10 @@ urls = (
 t = template.env.get_template('form.html')
 
 profile_form = form.Form(
+    form.Textbox(
+        'nickname',
+        description='Nickname',
+    ),
     form.Textbox(
         'first_name',
         description='First Name',
@@ -89,13 +101,44 @@ prefs_form = form.Form(
 
 class profile:
     def GET(self):
+        user = users.get_current_user()
         f = profile_form()
-        return t.render(util.data(
-            form=f.render(),
-            title='Edit Profile',
-            instructions='',
-        ))
+        if user:
+            e = User.all().filter('id', user.user_id()).fetch(1)[0]
+            if not e:
+                u = User(
+                    id=user.user_id(),
+                    nickname=user.nickname()
+                )
+                u.put()
+            else:
+                if e.meta_data:
+                    m = e.meta_data
+                    f.fill(
+                        nickname=e.nickname,
+                        first_name=m.first_name,
+                        middle_name=m.middle_name,
+                        last_name=m.last_name,
+                        city=m.city,
+                        state=m.state,
+                        postal_code=m.postal_code,
+                        country=m.country,
+                        skills=m.skills,
+                    )
+            return t.render(util.data(
+                form=f.render(),
+                title='Edit Profile',
+                instructions='',
+                message='',
+            ))
+        else:
+            return t.render(util.data(
+                title='Not Logged In!',
+                instructions='Please Log in to Edit Your Profile',
+            ))
+
     def POST(self):
+        user = users.get_current_user()
         f = profile_form()
         if not f.validates():
             return t.render(util.data(
@@ -104,11 +147,30 @@ class profile:
                 instructions='',
             ))
         else:
+            e = User.all().filter('id', user.user_id()).fetch(1)[0]
+            meta = e.meta_data
+            if meta is None:
+                m = UserMeta().put()
+                e.meta_data = m.key()
+                e = db.get(db.put(e))
+            if e.nickname:
+                e.nickname = f.d.nickname
+                db.put(e)
+            meta.first_name = f.d.first_name or ''
+            meta.middle_name = f.d.middle_name or ''
+            meta.last_name = f.d.last_name or ''
+            meta.city = f.d.city or ''
+            meta.state = f.d.state or ''
+            meta.postal_code = f.d.postal_code or ''
+            meta.country = f.d.country or ''
+            meta.skills = f.d.skills or ''
+            meta.put()
             raise web.seeother('/profile')
 
 
 class preferences:
     def GET(self):
+        user = users.get_current_user()
         f = prefs_form()
         return t.render(util.data(
             form=f.render(),
@@ -116,6 +178,7 @@ class preferences:
             instructions='',
         ))
     def POST(self):
+        user = users.get_current_user()
         f = prefs_form()
         if not f.validates():
             return t.render(util.data(
@@ -124,6 +187,16 @@ class preferences:
                 instructions='',
             ))
         else:
+            import logging
+            prefs = dict(f.d)
+            f_prefs = prefs.copy()
+            for o in prefs:
+                logging.error(prefs[o])
+                if not prefs[o]:
+                    del f_prefs[o]
+            e = User.all().filter('id', user.user_id()).fetch(1)[0]
+            e.shared_info = list(f_prefs)
+            db.put(e)
             raise web.seeother('/preferences')
 
 

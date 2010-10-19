@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 from google.appengine.api import users
 
 from google.appengine.api.memcache import get as mget
 from google.appengine.api.memcache import set as mset
 
 from google.appengine.ext import db
+
+from models import User
 
 def datah(**kwargs):
     data = {
@@ -39,10 +43,13 @@ def data(**kwargs):
         try:
             nickname = mget(key=user.user_id(), namespace='users')
             if nickname is None:
-                user_prefs = db.get(user.user_id())
-                nickname = user.prefs.nickname
+                user_prefs = query = db.GqlQuery(
+                    "SELECT * FROM User where id = :1",
+                    user.user_id()
+                ).fetch(1)
+                nickname = user_prefs[0].nickname
                 if not mset(key=user.user_id(), value=nickname, time=10, namespace='users'):
-                    pass
+                    logging.error('Could not set memcache value!')
             data['user']['nickname'] = nickname
         except:
             data['user']['nickname'] = user.nickname()

@@ -5,5 +5,13 @@
         <p>
         {{ instructions }}
         </p>
-        {{ form }}
+        <!--
+            If there is a python form library out there that works with
+            jinja2 that'll let me customize the output I would really
+            like to know about it because I strongly dislike this table.
+        -->
+        <form method="POST" action="">
+{{ form|indent(12, True) }}
+			<button type="submit">Submit</button>
+        </form>
 {% endblock %}

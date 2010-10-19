@@ -2,7 +2,7 @@
 
 from google.appengine.ext import db
 
-class UserMeta(db.Model)
+class UserMeta(db.Model):
     first_name = db.StringProperty()
     middle_name = db.StringProperty()
     last_name = db.StringProperty()
@@ -10,9 +10,12 @@ class UserMeta(db.Model)
     state = db.StringProperty()
     postal_code = db.StringProperty()
     country = db.StringProperty()
-    skills = db.ListProperty()
+    skills = db.StringProperty()
 
-class User(db.Model(UserMeta)):
-    user = db.UserProperty()
+
+class User(db.Model):
+    id = db.StringProperty()
     nickname = db.StringProperty()
-    shared_info = db.ListProperty()
+    shared_info = db.StringListProperty()
+    meta_data = db.ReferenceProperty(reference_class=UserMeta)
+
