@@ -11,7 +11,7 @@ class User_Bio(db.Model):
     postal_code = db.StringProperty()
     country = db.StringProperty()
     bio = db.TextProperty()
-    skills = db.StringProperty()
+    skills = db.StringListProperty()
 
 
 class User_Permissions(db.Model):
@@ -21,6 +21,7 @@ class User_Permissions(db.Model):
 
 class User(db.Model):
     id = db.StringProperty()
+    user = db.UserProperty()
     nickname = db.StringProperty()
     shared = db.ReferenceProperty(reference_class=User_Permissions)
     bio = db.ReferenceProperty(reference_class=User_Bio)

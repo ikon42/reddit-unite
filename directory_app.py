@@ -8,7 +8,7 @@ urls = (
 )
 
 class index:
-    def GET(self);
+    def GET(self):
         pass
 
 class redis:

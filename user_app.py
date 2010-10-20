@@ -7,7 +7,6 @@ import util
 from web import form
 
 from models import User
-from models import UserMeta
 
 from google.appengine.api import users
 
@@ -16,6 +15,9 @@ from google.appengine.api.memcache import set as mset
 from google.appengine.api.memcache import delete as mdel
 
 from google.appengine.ext import db
+
+from models import User_Bio
+from models import User_Permissions
 
 urls = (
     '/profile', 'profile',
@@ -60,8 +62,8 @@ profile_form = form.Form(
         description='Country',
     ),
     form.Textarea(
-        'skills',
-        description='Skills',
+        'bio',
+        description='bio',
     ),
 )
 
@@ -102,8 +104,8 @@ prefs_form = form.Form(
         value='True',
     ),
     form.Checkbox(
-        'skills',
-        description='Skills',
+        'bio',
+        description='Bio',
         value='True',
     ),
 )
@@ -116,17 +118,17 @@ class profile:
             try:
                 q = User.all().filter('id', user.user_id()).fetch(1)
                 e = q[0]
-                if e.meta_data:
+                if e.bio:
                     f.fill(
                         nickname=e.nickname,
-                        first_name=e.meta_data.first_name,
-                        middle_name=e.meta_data.middle_name,
-                        last_name=e.meta_data.last_name,
-                        city=e.meta_data.city,
-                        state=e.meta_data.state,
-                        postal_code=e.meta_data.postal_code,
-                        country=e.meta_data.country,
-                        skills=e.meta_data.skills,
+                        first_name=e.bio.first_name,
+                        middle_name=e.bio.middle_name,
+                        last_name=e.bio.last_name,
+                        city=e.bio.city,
+                        state=e.bio.state,
+                        postal_code=e.bio.postal_code,
+                        country=e.bio.country,
+                        bio=e.bio.bio,
                     )
             except:
                 u = User(
@@ -138,7 +140,7 @@ class profile:
                 form=f.render(),
                 title='Edit Profile',
                 instructions='''Please enter whatever information you feel comfortable
-        sharing. (Please note that your information is not shared until you
+        sharing. (Please note that your information is not shared.public until you
         grant us permission to share it in your Preferences)''',
             ))
         else:
@@ -155,28 +157,32 @@ class profile:
                 form=f.render(),
                 title='Edit Profile',
                 instructions='''Please enter whatever information you feel comfortable
-        sharing. (Please note that your information is not shared until you
+        sharing. (Please note that your information is not shared.public until you
         grant us permission to share it in your Preferences)''',
             ))
         else:
             q = User.all().filter('id', user.user_id()).fetch(1)
             e = q[0]
-            if e.meta_data is None:
-                m = UserMeta().put()
-                e.meta_data = m
+            if e.bio is None or e.shared is None:
+                if e.bio is None:
+                    m = User_Bio().put()
+                    e.bio = m
+                if e.shared is None:
+                    p = User_Permissions().put()
+                    e.shared = p
                 e = db.get(db.put(e))
             if e.nickname:
                 e.nickname = f.d.nickname
                 db.put(e)
-            e.meta_data.first_name = f.d.first_name or ''
-            e.meta_data.middle_name = f.d.middle_name or ''
-            e.meta_data.last_name = f.d.last_name or ''
-            e.meta_data.city = f.d.city or ''
-            e.meta_data.state = f.d.state or ''
-            e.meta_data.postal_code = f.d.postal_code or ''
-            e.meta_data.country = f.d.country or ''
-            e.meta_data.skills = f.d.skills or ''
-            e.meta_data.put()
+            e.bio.first_name = f.d.first_name or ''
+            e.bio.middle_name = f.d.middle_name or ''
+            e.bio.last_name = f.d.last_name or ''
+            e.bio.city = f.d.city or ''
+            e.bio.state = f.d.state or ''
+            e.bio.postal_code = f.d.postal_code or ''
+            e.bio.country = f.d.country or ''
+            e.bio.bio = f.d.bio or ''
+            e.bio.put()
             raise web.seeother('/profile')
 
 
@@ -188,14 +194,14 @@ class preferences:
             try:
                 q = User.all().filter('id', user.user_id()).fetch(1)
                 e = q[0]
-                f.first_name.checked = 'first_name' in e.shared_info
-                f.middle_name.checked = 'middle_name' in e.shared_info
-                f.last_name.checked = 'last_name' in e.shared_info
-                f.city.checked = 'city' in e.shared_info
-                f.state.checked = 'state' in e.shared_info
-                f.postal_code.checked = 'postal_code' in e.shared_info
-                f.country.checked = 'country' in e.shared_info
-                f.skills.checked = 'skills' in e.shared_info
+                f.first_name.checked = 'first_name' in e.shared.public
+                f.middle_name.checked = 'middle_name' in e.shared.public
+                f.last_name.checked = 'last_name' in e.shared.public
+                f.city.checked = 'city' in e.shared.public
+                f.state.checked = 'state' in e.shared.public
+                f.postal_code.checked = 'postal_code' in e.shared.public
+                f.country.checked = 'country' in e.shared.public
+                f.bio.checked = 'bio' in e.shared.public
             except:
                 pass
             return t.render(util.data(
@@ -218,7 +224,7 @@ class preferences:
                 instructions='Please indicate which items you wish to make public.',
             ))
         else:
-            mdel(key=user.user_id(), namespace='userdata')
+            import logging
             prefs = dict(f.d)
             f_prefs = prefs.copy()
             for o in prefs:
@@ -226,8 +232,10 @@ class preferences:
                     del f_prefs[o]
             q = User.all().filter('id', user.user_id()).fetch(1)
             e = q[0]
-            e.shared_info = list(f_prefs)
+            logging.error(e.shared.public)
+            e.shared.public = list(f_prefs)
             db.put(e)
+            #mdel(key=user.user_id(), namespace='userdata')
             raise web.seeother('/preferences')
 
 
@@ -240,18 +248,18 @@ class index:
             e = q[0]
             if mset(key=user_id, value=e, namespace='profile_data'):
                 pass
-        m = e.meta_data
+        m = e.bio
         return t.render(util.data(
             info={
-                'nickname': e.nickname if 'nickname' in e.shared_info else '',
-                'first_name': m.first_name if 'first_name' in e.shared_info else '',
-                'middle_name': m.middle_name if 'middle_name' in e.shared_info else '',
-                'last_name': m.last_name if 'last_name' in e.shared_info else '',
-                'city': m.city if 'city' in e.shared_info else '',
-                'state': m.state if 'state' in e.shared_info else '',
-                'postal_code': m.postal_code if 'postal_code' in e.shared_info else '',
-                'country': m.country if 'country' in e.shared_info else '',
-                'skills': m.skills if 'skills' in e.shared_info else '',
+                'nickname': e.nickname if 'nickname' in e.shared.public else '',
+                'first_name': m.first_name if 'first_name' in e.shared.public else '',
+                'middle_name': m.middle_name if 'middle_name' in e.shared.public else '',
+                'last_name': m.last_name if 'last_name' in e.shared.public else '',
+                'city': m.city if 'city' in e.shared.public else '',
+                'state': m.state if 'state' in e.shared.public else '',
+                'postal_code': m.postal_code if 'postal_code' in e.shared.public else '',
+                'country': m.country if 'country' in e.shared.public else '',
+                'bio': m.bio if 'bio' in e.shared.public else '',
             }
         ))
 
