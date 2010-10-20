@@ -2,7 +2,7 @@
 
 {% block main %}
             <h1>{{ info.first_name|title }} {{ info.middle_name|title }} {{ info.last_name|title }}</h1>
-            <h2>{{ info.city }}, {{ info.state }} {{ info.postal_code }}</h2>
+            <h2>{% if info.city %}{{ info.city }}, {{ endif}}{{ info.state }} {{ info.postal_code }}</h2>
             <h3>{{ info.country }}</h3>
             <p>
             {{ info.skills|indent(8) }}

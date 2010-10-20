@@ -6,13 +6,14 @@ path.insert(0, 'lib/')
 
 import web
 import user_app as user
-import login
+#import login
 import template
 import util
 
 urls = (
     '/user', user.app,
     '/login', login.app,
+    '/faq/?', 'faq',
     '/', 'index',
 )
 
@@ -20,6 +21,13 @@ class index:
     def GET(self):
         t = template.env.get_template('home.html')
         return t.render(util.data())
+
+
+class faq:
+    def GET(self):
+        raise web.notfound()
+        t = template.env.get_template('faq.html')
+        #return t.render(util.data())
 
 
 app = web.application(urls, locals())

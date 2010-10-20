@@ -117,17 +117,16 @@ class profile:
                 q = User.all().filter('id', user.user_id()).fetch(1)
                 e = q[0]
                 if e.meta_data:
-                    m = e.meta_data
                     f.fill(
                         nickname=e.nickname,
-                        first_name=m.first_name,
-                        middle_name=m.middle_name,
-                        last_name=m.last_name,
-                        city=m.city,
-                        state=m.state,
-                        postal_code=m.postal_code,
-                        country=m.country,
-                        skills=m.skills,
+                        first_name=e.meta_data.first_name,
+                        middle_name=e.meta_data.middle_name,
+                        last_name=e.meta_data.last_name,
+                        city=e.meta_data.city,
+                        state=e.meta_data.state,
+                        postal_code=e.meta_data.postal_code,
+                        country=e.meta_data.country,
+                        skills=e.meta_data.skills,
                     )
             except:
                 u = User(
@@ -235,11 +234,11 @@ class preferences:
 class index:
     def GET(self, user_id):
         t = template.env.get_template('profile.html')
-        e = mget(key=user_id, namespace='userdata')
+        e = mget(key=user_id, namespace='profile_data')
         if e is None:
             q = User.all().filter('id', user_id).fetch(1)
             e = q[0]
-            if mset(key=user_id, value=e, namespace='userdata'):
+            if mset(key=user_id, value=e, namespace='profile_data'):
                 pass
         m = e.meta_data
         return t.render(util.data(
