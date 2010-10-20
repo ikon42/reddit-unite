@@ -5,14 +5,16 @@ from sys import path
 path.insert(0, 'lib/')
 
 import web
-import user_app as user
-#import login
 import template
 import util
 
+import user_app as user
+#import login_app as login
+import directory_app as directory
+
 urls = (
     '/user', user.app,
-    '/login', login.app,
+    '/directory', directory.app,
     '/faq/?', 'faq',
     '/', 'index',
 )
@@ -26,7 +28,7 @@ class index:
 class faq:
     def GET(self):
         raise web.notfound()
-        t = template.env.get_template('faq.html')
+        #t = template.env.get_template('faq.html')
         #return t.render(util.data())
 
 
