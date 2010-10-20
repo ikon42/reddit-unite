@@ -15,6 +15,7 @@ body {
 --------------------------------------------------------------------- */
 .site-header {
     text-align: center;
+    margin: 1em 0;
 }
 .site-header h1,
 .site-header h1 a {
