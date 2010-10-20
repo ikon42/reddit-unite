@@ -116,8 +116,11 @@ class profile:
         f = profile_form()
         if user:
             try:
-                q = User.all().filter('id', user.user_id()).fetch(1)
-                e = q[0]
+                e = mget(key=user.user_id, namespace='profile_data')
+                if e is None:
+                    q = User.all().filter('id', user.user_id()).fetch(1)
+                    e = q[0]
+                    mset(key=user_id, value=e, namespace='profile_data')
                 if e.bio:
                     f.fill(
                         nickname=e.nickname,
@@ -133,7 +136,8 @@ class profile:
             except:
                 u = User(
                     id=user.user_id(),
-                    nickname=user.nickname()
+                    user=user,
+                    nickname=user.nickname(),
                 )
                 u.put()
             return t.render(util.data(
@@ -192,8 +196,11 @@ class preferences:
         f = prefs_form()
         if user:
             try:
-                q = User.all().filter('id', user.user_id()).fetch(1)
-                e = q[0]
+                e = mget(key=user.user_id, namespace='profile_data')
+                if e is None:
+                    q = User.all().filter('id', user.user_id()).fetch(1)
+                    e = q[0]
+                    mset(key=user_id, value=e, namespace='profile_data')
                 f.first_name.checked = 'first_name' in e.shared.public
                 f.middle_name.checked = 'middle_name' in e.shared.public
                 f.last_name.checked = 'last_name' in e.shared.public
@@ -232,10 +239,9 @@ class preferences:
                     del f_prefs[o]
             q = User.all().filter('id', user.user_id()).fetch(1)
             e = q[0]
-            logging.error(e.shared.public)
             e.shared.public = list(f_prefs)
-            db.put(e)
-            #mdel(key=user.user_id(), namespace='userdata')
+            e.shared.put()
+            mdel(key=user.user_id(), namespace='profile_data')
             raise web.seeother('/preferences')
 
 
@@ -246,8 +252,7 @@ class index:
         if e is None:
             q = User.all().filter('id', user_id).fetch(1)
             e = q[0]
-            if mset(key=user_id, value=e, namespace='profile_data'):
-                pass
+            mset(key=user_id, value=e, namespace='profile_data')
         m = e.bio
         return t.render(util.data(
             info={

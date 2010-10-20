@@ -23,6 +23,6 @@ class User(db.Model):
     id = db.StringProperty()
     user = db.UserProperty()
     nickname = db.StringProperty()
-    shared = db.ReferenceProperty(reference_class=User_Permissions)
-    bio = db.ReferenceProperty(reference_class=User_Bio)
+    shared = db.ReferenceProperty(User_Permissions)
+    bio = db.ReferenceProperty(User_Bio)
 
