@@ -4,9 +4,9 @@ import web
 import template
 import util
 
-from web import form
-
 from models import User
+
+from forms import profile_form, prefs_form
 
 from google.appengine.api import users
 
@@ -26,93 +26,10 @@ urls = (
     '', 'redir',
 )
 
-t = template.env.get_template('form.html')
-
-profile_form = form.Form(
-    form.Textbox(
-        'nickname',
-        description='Nickname',
-    ),
-    form.Textbox(
-        'first_name',
-        description='First Name',
-    ),
-    form.Textbox(
-        'middle_name',
-        description='Middle Name',
-    ),
-    form.Textbox(
-        'last_name',
-        description='Last Name',
-    ),
-    form.Textbox(
-        'city',
-        description='City',
-    ),
-    form.Textbox(
-        'state',
-        description='State or Province',
-    ),
-    form.Textbox(
-        'postal_code',
-        description='Postal Code',
-    ),
-    form.Textbox(
-        'country',
-        description='Country',
-    ),
-    form.Textarea(
-        'bio',
-        description='bio',
-    ),
-)
-
-prefs_form = form.Form(
-    form.Checkbox(
-        'first_name',
-        description='First Name',
-        value='True',
-    ),
-    form.Checkbox(
-        'middle_name',
-        description='Middle Name',
-        value='True',
-    ),
-    form.Checkbox(
-        'last_name',
-        description='Last Name',
-        value='True',
-    ),
-    form.Checkbox(
-        'city',
-        description='City',
-        value='True',
-    ),
-    form.Checkbox(
-        'state',
-        description='State or Province',
-        value='True',
-    ),
-    form.Checkbox(
-        'postal_code',
-        description='Postal Code',
-        value='True',
-    ),
-    form.Checkbox(
-        'country',
-        description='Country',
-        value='True',
-    ),
-    form.Checkbox(
-        'bio',
-        description='Bio',
-        value='True',
-    ),
-)
-
 class profile:
     def GET(self):
         user = users.get_current_user()
+        t = template.env.get_template('edit_profile.html')
         f = profile_form()
         if user:
             try:
@@ -155,6 +72,7 @@ class profile:
 
     def POST(self):
         user = users.get_current_user()
+        t = template.env.get_template('edit_profile.html')
         f = profile_form()
         if not f.validates():
             return t.render(util.data(
@@ -193,6 +111,7 @@ class profile:
 class preferences:
     def GET(self):
         user = users.get_current_user()
+        t = template.env.get_template('preferences.html')
         f = prefs_form()
         if user:
             try:
@@ -223,6 +142,7 @@ class preferences:
             ))
     def POST(self):
         user = users.get_current_user()
+        t = template.env.get_template('preferences.html')
         f = prefs_form()
         if not f.validates():
             return t.render(util.data(
@@ -264,7 +184,7 @@ class index:
                 'state': m.state if 'state' in e.shared.public else '',
                 'postal_code': m.postal_code if 'postal_code' in e.shared.public else '',
                 'country': m.country if 'country' in e.shared.public else '',
-                'bio': m.bio if 'bio' in e.shared.public else '',
+                'bio': markdown(m.bio) if 'bio' in e.shared.public else '',
             }
         ))
 
