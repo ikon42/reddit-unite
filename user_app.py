@@ -31,7 +31,7 @@ t = template.env.get_template('form.html')
 profile_form = form.Form(
     form.Textbox(
         'nickname',
-        description='Nickname',
+        description='Reddit Username',
     ),
     form.Textbox(
         'first_name',
@@ -144,7 +144,7 @@ class profile:
                 form=f.render(),
                 title='Edit Profile',
                 instructions='''Please enter whatever information you feel comfortable
-        sharing. (Please note that your information is not shared.public until you
+        sharing. (Please note that your information is not shared with the public until you
         grant us permission to share it in your Preferences)''',
             ))
         else:
