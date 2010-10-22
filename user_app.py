@@ -31,7 +31,7 @@ t = template.env.get_template('form.html')
 profile_form = form.Form(
     form.Textbox(
         'nickname',
-        description='Reddit Username',
+        description='Nickname',
     ),
     form.Textbox(
         'first_name',
@@ -187,6 +187,7 @@ class profile:
             e.bio.country = f.d.country or ''
             e.bio.bio = f.d.bio or ''
             e.bio.put()
+            e.put()
             raise web.seeother('/profile')
 
 
@@ -241,6 +242,7 @@ class preferences:
             e = q[0]
             e.shared.public = list(f_prefs)
             e.shared.put()
+            e.put()
             mdel(key=user.user_id(), namespace='profile_data')
             raise web.seeother('/preferences')
 

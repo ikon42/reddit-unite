@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import web
+
 from google.appengine.api import users
 
 from google.appengine.api.memcache import get as mget
@@ -35,9 +37,10 @@ def stripPrivateData(user):
     """This method takes in a user object and returns a dict that holds all the users public data. This method assumes that if nothing is stored in the permissions then the user doesn't want to share anything"""
     
     if user.shared != None: #Assume that none == share nowt
-        x = {}
+        x = {'nickname':user.nickname}
         for attr in user.shared.public:
             x[attr] = getattr(user.bio,attr)
+        web.debug(x)
         return x 
     else:
         return None

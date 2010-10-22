@@ -19,13 +19,17 @@ urls = (
 t = template.env.get_template('allmembers.html')
 
 class allmembers:
+    """This class displays all members."""
     def GET(self):
 
         userlist = []
         for i in User.all():
             x = util.stripPrivateData(i)
-            if x:
+            if x is not None:
                 userlist.append(x)
+
+        web.debug("AAA")
+        web.debug(userlist)
 
         return t.render(util.data(
                     title ='Display all members',
