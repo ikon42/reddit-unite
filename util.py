@@ -30,3 +30,14 @@ def data(**kwargs):
         data['log_in_out'] = users.create_login_url('/')
     data.update(kwargs)
     return data
+
+def stripPrivateData(user):
+    """This method takes in a user object and returns a dict that holds all the users public data. This method assumes that if nothing is stored in the permissions then the user doesn't want to share anything"""
+    
+    if user.shared != None: #Assume that none == share nowt
+        x = {}
+        for attr in user.shared.public:
+            x[attr] = getattr(user.bio,attr)
+        return x 
+    else:
+        return None

@@ -20,9 +20,15 @@ t = template.env.get_template('allmembers.html')
 
 class allmembers:
     def GET(self):
+
+        userlist = []
+        for i in User.all():
+            userlist.append(util.stripPrivateData(i))
+
         return t.render(util.data(
                     title ='Display all members',
-                    instructions='''This forms shows all members'''
+                    instructions='''This forms shows all members''',
+                    users = userlist
                     ))
 
 class index:
