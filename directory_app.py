@@ -23,7 +23,9 @@ class allmembers:
 
         userlist = []
         for i in User.all():
-            userlist.append(util.stripPrivateData(i))
+            x = util.stripPrivateData(i)
+            if x:
+                userlist.append(x)
 
         return t.render(util.data(
                     title ='Display all members',
