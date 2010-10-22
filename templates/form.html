@@ -8,7 +8,9 @@
         </p>
         <!-- WTForms FTW! -->
         <form method="POST" action="">
-{% block form %}{% endblock %}
+            <dl>{% for field in form %}
+                {{ render_field(field)|indent(16) }}
+            {% endfor %}</dl>
             <button type="submit">Submit</button>
         </form>
 {% endblock %}

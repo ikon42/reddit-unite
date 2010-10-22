@@ -4,10 +4,6 @@ import web
 import template
 import util
 
-from models import User
-
-from forms import profile_form, prefs_form
-
 from google.appengine.api import users
 
 from google.appengine.api.memcache import get as mget
@@ -16,8 +12,12 @@ from google.appengine.api.memcache import delete as mdel
 
 from google.appengine.ext import db
 
+from models import User
 from models import User_Bio
 from models import User_Permissions
+
+from forms import profile_form
+from forms import prefs_form
 
 urls = (
     '/profile', 'profile',
@@ -26,10 +26,11 @@ urls = (
     '', 'redir',
 )
 
+t = template.env.get_template('form.html')
+
 class profile:
     def GET(self):
         user = users.get_current_user()
-        t = template.env.get_template('edit_profile.html')
         f = profile_form()
         if user:
             try:
@@ -39,17 +40,15 @@ class profile:
                     e = q[0]
                     mset(key=user_id, value=e, namespace='profile_data')
                 if e.bio:
-                    f.fill(
-                        nickname=e.nickname,
-                        first_name=e.bio.first_name,
-                        middle_name=e.bio.middle_name,
-                        last_name=e.bio.last_name,
-                        city=e.bio.city,
-                        state=e.bio.state,
-                        postal_code=e.bio.postal_code,
-                        country=e.bio.country,
-                        bio=e.bio.bio,
-                    )
+                    f.nickname.value = e.nickname
+                    f.first_name.value = e.bio.first_name
+                    f.middle_name.value = e.bio.middle_name
+                    f.last_name.value = e.bio.last_name
+                    f.city.value = e.bio.city
+                    f.state.value = e.bio.state
+                    f.postal_code.value = e.bio.postal_code
+                    f.country.value = e.bio.country
+                    f.bio.value = e.bio.bio
             except:
                 u = User(
                     id=user.user_id(),
@@ -58,7 +57,7 @@ class profile:
                 )
                 u.put()
             return t.render(util.data(
-                form=f.render(),
+                form=f,
                 title='Edit Profile',
                 instructions='''Please enter whatever information you feel comfortable
         sharing. (Please note that your information is not shared.public until you
@@ -72,11 +71,12 @@ class profile:
 
     def POST(self):
         user = users.get_current_user()
-        t = template.env.get_template('edit_profile.html')
+        import logging
+        logging.error(dir(self.POST))
         f = profile_form()
-        if not f.validates():
+        if not f.validate():
             return t.render(util.data(
-                form=f.render(),
+                form=f,
                 title='Edit Profile',
                 instructions='''Please enter whatever information you feel comfortable
         sharing. (Please note that your information is not shared.public until you
@@ -94,16 +94,16 @@ class profile:
                     e.shared = p
                 e = db.get(db.put(e))
             if e.nickname:
-                e.nickname = f.d.nickname
+                e.nickname = f.nickname.data
                 db.put(e)
-            e.bio.first_name = f.d.first_name or ''
-            e.bio.middle_name = f.d.middle_name or ''
-            e.bio.last_name = f.d.last_name or ''
-            e.bio.city = f.d.city or ''
-            e.bio.state = f.d.state or ''
-            e.bio.postal_code = f.d.postal_code or ''
-            e.bio.country = f.d.country or ''
-            e.bio.bio = f.d.bio or ''
+            e.bio.first_name = f.first_name.data or ''
+            e.bio.middle_name = f.middle_name.data or ''
+            e.bio.last_name = f.last_name.data or ''
+            e.bio.city = f.city.data or ''
+            e.bio.state = f.state.data or ''
+            e.bio.postal_code = f.postal_code.data or 0
+            e.bio.country = f.country.data or ''
+            e.bio.bio = f.bio.data or ''
             e.bio.put()
             raise web.seeother('/profile')
 
@@ -111,7 +111,6 @@ class profile:
 class preferences:
     def GET(self):
         user = users.get_current_user()
-        t = template.env.get_template('preferences.html')
         f = prefs_form()
         if user:
             try:
@@ -120,18 +119,18 @@ class preferences:
                     q = User.all().filter('id', user.user_id()).fetch(1)
                     e = q[0]
                     mset(key=user_id, value=e, namespace='profile_data')
-                f.first_name.checked = 'first_name' in e.shared.public
-                f.middle_name.checked = 'middle_name' in e.shared.public
-                f.last_name.checked = 'last_name' in e.shared.public
-                f.city.checked = 'city' in e.shared.public
-                f.state.checked = 'state' in e.shared.public
-                f.postal_code.checked = 'postal_code' in e.shared.public
-                f.country.checked = 'country' in e.shared.public
-                f.bio.checked = 'bio' in e.shared.public
+                f.first_name.value = 'first_name' in e.shared.public
+                f.middle_name.value = 'middle_name' in e.shared.public
+                f.last_name.value = 'last_name' in e.shared.public
+                f.city.value = 'city' in e.shared.public
+                f.state.value = 'state' in e.shared.public
+                f.postal_code.value = 'postal_code' in e.shared.public
+                f.country.value = 'country' in e.shared.public
+                f.bio.value = 'bio' in e.shared.public
             except:
                 pass
             return t.render(util.data(
-                form=f.render(),
+                form=f,
                 title='Preferences',
                 instructions='Please indicate which items you wish to make public.',
             ))
@@ -141,17 +140,17 @@ class preferences:
                 instructions='Please log in to have preferences!',
             ))
     def POST(self):
+        import logging
         user = users.get_current_user()
-        t = template.env.get_template('preferences.html')
-        f = prefs_form()
-        if not f.validates():
+        f = prefs_form(web.input())
+        if not f.validate():
             return t.render(util.data(
-                form=f.render(),
+                form=f,
                 title='Preferences',
                 instructions='Please indicate which items you wish to make public.',
             ))
         else:
-            import logging
+            logging.error(dir(f))
             prefs = dict(f.d)
             f_prefs = prefs.copy()
             for o in prefs:

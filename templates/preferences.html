@@ -1,14 +1,12 @@
 {% extends "form.html" %}
 
-{%- block form -%}
-            <dl>
-                {{ render_field(form.first_name) }}
-                {{ render_field(form.middle_name) }}
-                {{ render_field(form.last_name) }}
-                {{ render_field(form.city) }}
-                {{ render_field(form.state) }}
-                {{ render_field(form.postal_code) }}
-                {{ render_field(form.country) }}
-                {{ render_field(form.bio) }}
-            </dl>
-{%- endblock -%}
+{% block form %}            <dl>
+                {{ render_field(form.first_name)|indent(16) }}
+                {{ render_field(form.middle_name)|indent(16) }}
+                {{ render_field(form.last_name)|indent(16) }}
+                {{ render_field(form.city)|indent(16) }}
+                {{ render_field(form.state)|indent(16) }}
+                {{ render_field(form.postal_code)|indent(16) }}
+                {{ render_field(form.country)|indent(16) }}
+                {{ render_field(form.bio)|indent(16) }}
+            </dl>{% endblock %}

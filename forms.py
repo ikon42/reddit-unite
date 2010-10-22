@@ -2,7 +2,7 @@
 
 from wtforms import Form
 from wtforms import BooleanField
-from wtform import IntegerField
+from wtforms import IntegerField
 from wtforms import TextField
 from wtforms import TextAreaField
 from wtforms import validators
