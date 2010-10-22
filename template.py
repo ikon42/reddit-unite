@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import markdown2
+import jinja2.ext
 
 from os import path
 
 from jinja2 import Environment
-from jinja2 import Extension
 from jinja2 import FileSystemLoader
 
 template_dir = path.join(path.dirname(__file__), 'templates')
 
-class Markdown2Extension(Extension):
+class Markdown2Extension(jinja2.ext.Extension):
     tags = set(['markdown'])
-
     def __init__(self, environment):
         super(Markdown2Extension, self).__init__(environment)
         environment.extend(
@@ -29,7 +28,7 @@ class Markdown2Extension(Extension):
             self.call_method('_markdown_support'),
             [],
             [],
-            body
+            body,
         ).set_lineno(lineno)
 
     def _markdown_support(self, caller):

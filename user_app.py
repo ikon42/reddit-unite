@@ -31,37 +31,41 @@ t = template.env.get_template('form.html')
 class profile:
     def GET(self):
         user = users.get_current_user()
-        f = profile_form()
         if user:
-            try:
-                e = mget(key=user.user_id, namespace='profile_data')
-                if e is None:
+            e = mget(key=user.user_id(), namespace='profile_data')
+            if e is None:
+                try:
                     q = User.all().filter('id', user.user_id()).fetch(1)
                     e = q[0]
-                    mset(key=user_id, value=e, namespace='profile_data')
-                if e.bio:
-                    f.nickname.value = e.nickname
-                    f.first_name.value = e.bio.first_name
-                    f.middle_name.value = e.bio.middle_name
-                    f.last_name.value = e.bio.last_name
-                    f.city.value = e.bio.city
-                    f.state.value = e.bio.state
-                    f.postal_code.value = e.bio.postal_code
-                    f.country.value = e.bio.country
-                    f.bio.value = e.bio.bio
-            except:
-                u = User(
-                    id=user.user_id(),
-                    user=user,
-                    nickname=user.nickname(),
+                except:
+                    u = User(
+                        id=user.user_id(),
+                        user=user,
+                        nickname=user.nickname(),
+                    )
+                    e = db.get(u.put())
+                mset(key=user.user_id(), value=e, time=10, namespace='profile_data')
+            f = profile_form()
+            if e.bio:
+                f = profile_form(
+                    nickname=e.nickname,
+                    first_name=e.bio.first_name,
+                    middle_name=e.bio.middle_name,
+                    last_name=e.bio.last_name,
+                    city=e.bio.city,
+                    state=e.bio.state,
+                    postal_code=e.bio.postal_code,
+                    country=e.bio.country,
+                    bio=e.bio.bio,
                 )
-                u.put()
+                import logging
+                logging.error(f)
             return t.render(util.data(
                 form=f,
                 title='Edit Profile',
                 instructions='''Please enter whatever information you feel comfortable
-        sharing. (Please note that your information is not shared.public until you
-        grant us permission to share it in your Preferences)''',
+            sharing. (Please note that your information is not shared.public until you
+            grant us permission to share it in your Preferences)''',
             ))
         else:
             return t.render(util.data(
@@ -71,16 +75,25 @@ class profile:
 
     def POST(self):
         user = users.get_current_user()
-        import logging
-        logging.error(dir(self.POST))
-        f = profile_form()
+        d = web.input()
+        f = profile_form(
+            nickname=d.nickname,
+            first_name=d.first_name,
+            middle_name=d.middle_name,
+            last_name=d.last_name,
+            city=d.city,
+            state=d.state,
+            postal_code=long(d.postal_code),
+            country=d.country,
+            bio=d.bio,
+        )
         if not f.validate():
             return t.render(util.data(
                 form=f,
                 title='Edit Profile',
                 instructions='''Please enter whatever information you feel comfortable
-        sharing. (Please note that your information is not shared.public until you
-        grant us permission to share it in your Preferences)''',
+            sharing. (Please note that your information is not shared.public until you
+            grant us permission to share it in your Preferences)''',
             ))
         else:
             q = User.all().filter('id', user.user_id()).fetch(1)
@@ -111,24 +124,22 @@ class profile:
 class preferences:
     def GET(self):
         user = users.get_current_user()
-        f = prefs_form()
         if user:
-            try:
-                e = mget(key=user.user_id, namespace='profile_data')
-                if e is None:
-                    q = User.all().filter('id', user.user_id()).fetch(1)
-                    e = q[0]
-                    mset(key=user_id, value=e, namespace='profile_data')
-                f.first_name.value = 'first_name' in e.shared.public
-                f.middle_name.value = 'middle_name' in e.shared.public
-                f.last_name.value = 'last_name' in e.shared.public
-                f.city.value = 'city' in e.shared.public
-                f.state.value = 'state' in e.shared.public
-                f.postal_code.value = 'postal_code' in e.shared.public
-                f.country.value = 'country' in e.shared.public
-                f.bio.value = 'bio' in e.shared.public
-            except:
-                pass
+            e = mget(key=user.user_id(), namespace='profile_data')
+            if e is None:
+                q = User.all().filter('id', user.user_id()).fetch(1)
+                e = q[0]
+                mset(key=user.user_id(), value=e, namespace='profile_data')
+            f = prefs_form(
+                first_name='first_name' in e.shared.public,
+                middle_name='middle_name' in e.shared.public,
+                last_name='last_name' in e.shared.public,
+                city='city' in e.shared.public,
+                state='state' in e.shared.public,
+                postal_code='postal_code' in e.shared.public,
+                country='country' in e.shared.public,
+                bio='bio' in e.shared.public,
+            )
             return t.render(util.data(
                 form=f,
                 title='Preferences',
@@ -140,9 +151,19 @@ class preferences:
                 instructions='Please log in to have preferences!',
             ))
     def POST(self):
-        import logging
         user = users.get_current_user()
-        f = prefs_form(web.input())
+        d = web.input()
+        f = profile_form(
+            nickname=d.nickname,
+            first_name=d.first_name,
+            middle_name=d.middle_name,
+            last_name=d.last_name,
+            city=d.city,
+            state=d.state,
+            postal_code=d.postal_code,
+            country=d.country,
+            bio=d.bio,
+        )
         if not f.validate():
             return t.render(util.data(
                 form=f,
@@ -151,7 +172,7 @@ class preferences:
             ))
         else:
             logging.error(dir(f))
-            prefs = dict(f.d)
+            prefs = dict(f)
             f_prefs = prefs.copy()
             for o in prefs:
                 if not prefs[o]:
