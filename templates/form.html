@@ -1,17 +1,16 @@
 {% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
 
 {% block main %}
-        <h1>{{ title }}</h1>
-        <p>
-        {{ instructions }}
-        </p>
-        <!--
-            If there is a python form library out there that works with
-            jinja2 that'll let me customize the output I would really
-            like to know about it because I strongly dislike this table.
-        -->
-        <form method="POST" action="">
-{{ form|indent(12, True) }}
-			<button type="submit">Submit</button>
-        </form>
+            <h1>{{ title }}</h1>
+            <p>
+            {{ instructions }}
+            </p>{% if form %}
+            <form method="POST" action="">
+                <!-- WTForms FTW! -->
+                <dl>{% for field in form %}
+                    {{ render_field(field)|indent(20) }}
+                {% endfor %}</dl>
+                <button type="submit">Submit</button>
+            </form>{% endif %}
 {% endblock %}

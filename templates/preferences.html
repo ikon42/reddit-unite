@@ -1,0 +1,12 @@
+{% extends "form.html" %}
+
+{% block form %}            <dl>
+                {{ render_field(form.first_name)|indent(16) }}
+                {{ render_field(form.middle_name)|indent(16) }}
+                {{ render_field(form.last_name)|indent(16) }}
+                {{ render_field(form.city)|indent(16) }}
+                {{ render_field(form.state)|indent(16) }}
+                {{ render_field(form.postal_code)|indent(16) }}
+                {{ render_field(form.country)|indent(16) }}
+                {{ render_field(form.bio)|indent(16) }}
+            </dl>{% endblock %}

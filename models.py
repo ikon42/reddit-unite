@@ -1,28 +1,34 @@
 # -*- coding: utf-8 -*-
 
-from google.appengine.ext import db
+from google.appengine.ext.db import Model
+from google.appengine.ext.db import StringProperty
+from google.appengine.ext.db import TextProperty
+from google.appengine.ext.db import StringListProperty
+from google.appengine.ext.db import ReferenceProperty
+from google.appengine.ext.db import UserProperty
+from google.appengine.ext.db import IntegerProperty
 
-class User_Bio(db.Model):
-    first_name = db.StringProperty()
-    middle_name = db.StringProperty()
-    last_name = db.StringProperty()
-    city = db.StringProperty()
-    state = db.StringProperty()
-    postal_code = db.StringProperty()
-    country = db.StringProperty()
-    bio = db.TextProperty()
-    skills = db.StringListProperty()
+class User_Bio(Model):
+    first_name = StringProperty()
+    middle_name = StringProperty()
+    last_name = StringProperty()
+    city = StringProperty()
+    state = StringProperty()
+    postal_code = IntegerProperty()
+    country = StringProperty()
+    bio = TextProperty()
+    skills = StringListProperty()
 
 
-class User_Permissions(db.Model):
-    public = db.StringListProperty()
-    user = db.StringListProperty()
+class User_Permissions(Model):
+    public = StringListProperty()
+    user = StringListProperty()
 
 
-class User(db.Model):
-    id = db.StringProperty()
-    user = db.UserProperty()
-    nickname = db.StringProperty()
-    shared = db.ReferenceProperty(User_Permissions)
-    bio = db.ReferenceProperty(User_Bio)
+class User(Model):
+    id = StringProperty()
+    user = UserProperty()
+    nickname = StringProperty()
+    shared = ReferenceProperty(User_Permissions)
+    bio = ReferenceProperty(User_Bio)
 
