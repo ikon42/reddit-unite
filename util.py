@@ -39,7 +39,10 @@ def stripPrivateData(user):
     if user.shared != None: #Assume that none == share nowt
         x = {'nickname':user.nickname}
         for attr in user.shared.public:
-            x[attr] = getattr(user.bio,attr)
+            try:
+                x[attr] = getattr(user.bio,attr)
+            except AttributeError:
+                pass
         web.debug(x)
         return x 
     else:

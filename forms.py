@@ -14,7 +14,7 @@ class profile_form(Form):
     last_name = TextField('Last Name')
     city = TextField('City')
     state = TextField('State or Province')
-    postal_code = IntegerField('Postal Code')
+    postal_code = TextField('Postal Code')
     country = TextField('Country')
     bio = TextAreaField('Bio')
 

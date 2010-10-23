@@ -14,7 +14,7 @@ class User_Bio(Model):
     last_name = StringProperty()
     city = StringProperty()
     state = StringProperty()
-    postal_code = IntegerProperty()
+    postal_code = StringProperty()
     country = StringProperty()
     bio = TextProperty()
     skills = StringListProperty()
