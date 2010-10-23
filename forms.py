@@ -20,7 +20,7 @@ class profile_form(Form):
 
 
 class prefs_form(Form):
-    nickname = BooleanField('Nickname')
+    #nickname = BooleanField('Nickname')
     first_name = BooleanField('First Name')
     middle_name = BooleanField('Middle Name')
     last_name = BooleanField('Last Name')

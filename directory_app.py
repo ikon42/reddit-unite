@@ -28,7 +28,6 @@ class allmembers:
             if x is not None:
                 userlist.append(x)
 
-        web.debug("AAA")
         web.debug(userlist)
 
         return t.render(util.data(
