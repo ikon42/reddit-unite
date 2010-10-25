@@ -130,16 +130,29 @@ class preferences:
                 q = User.all().filter('id', user.user_id()).fetch(1)
                 e = q[0]
                 mset(key=user.user_id(), value=e, namespace='profile_data')
-            f = prefs_form(
-                first_name='first_name' in e.shared.public,
-                middle_name='middle_name' in e.shared.public,
-                last_name='last_name' in e.shared.public,
-                city='city' in e.shared.public,
-                state='state' in e.shared.public,
-                postal_code='postal_code' in e.shared.public,
-                country='country' in e.shared.public,
-                bio='bio' in e.shared.public,
-            )
+            
+            if e.shared != None:
+                f = prefs_form(
+                    first_name='first_name' in e.shared.public,
+                    middle_name='middle_name' in e.shared.public,
+                    last_name='last_name' in e.shared.public,
+                    city='city' in e.shared.public,
+                    state='state' in e.shared.public,
+                    postal_code='postal_code' in e.shared.public,
+                    country='country' in e.shared.public,
+                    bio='bio' in e.shared.public,
+                )
+            else: #If e.shared if empty then set default to False.
+                f = prefs_form(
+                    first_name=False,
+                    middle_name=False,
+                    last_name=False,
+                    city=False,
+                    state=False,
+                    postal_code=False,
+                    country=False,
+                    bio=False
+                )
             return t.render(util.data(
                 form=f,
                 title='Preferences',
