@@ -167,7 +167,7 @@ class preferences:
         user = users.get_current_user()
         d = web.input()
         f = profile_form(
-            nickname=d.nickname,
+            #nickname=d.nickname,
             first_name=d.first_name,
             middle_name=d.middle_name,
             last_name=d.last_name,
