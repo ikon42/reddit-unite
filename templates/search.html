@@ -1,0 +1,21 @@
+{% extends "form.html" %}
+
+{% block form %}
+            <form method="GET" action="">
+                {{ form.query }}
+                <button type="submit">Submit</button>
+            </form>{% if results %}
+            <div class="results">
+                <ul>{% for item in results %}
+                    <li>
+                        <h1>{{ item.name }}</h1>
+                        <ul>
+                            <li>From: {% if item.location %}{{ item.location }}{% else %}Unknown{% endif %}</li>
+                            {% if item.bio %}<li>
+                                <p>
+                                {{ item.bio }}
+                                </p>
+                            </li>{% endif %}
+                    </li>{% endfor %}
+                </ul>
+            </div>{% endif %}{% endblock %}

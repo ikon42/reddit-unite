@@ -1,10 +1,18 @@
 {% extends "base.html" %}
+{% from "_permissionshelpers.html" import check_for %}
 
 {% block main %}
-            <h1>{{ info.first_name|title }} {{ info.middle_name|title }} {{ info.last_name|title }}</h1>
-            <h2>{% if info.city %}{{ info.city }}, {% endif %}{{ info.state }} {{ info.postal_code }}</h2>
-            <h3>{{ info.country }}</h3>
-            <p>
-            {{ info.bio|indent(8) }}
-            </p>
+            <div class="vcard">
+                <h1 class="fn n">{% if info.first_name %}
+                    <span class="given-name">{{ info.first_name|title }} </span>{% endif %}{% if info.middle_name %}
+                    <span class="additional-name">{{ info.middle_name|title }} </span>{% endif %}{% if info.last_name %}
+                    <span class="family-name">{{ info.last_name|title }} </span>{% endif %}
+                    (<span class="nickname">{{ info.nickname }}</span>)
+                </h1>
+                <p class="label">{% if info.city %}{{ info.city|title }}, {% endif %}{{ check_for(info.state)|title }} {{ check_for(info.postal_code) }} {{ check_for(info.country)|title }}
+                </p>
+                {% if info.bio %}<p class="note">
+                {{ info.bio|indent(8) }}
+                </p>{% endif %}
+            </div>
         {% endblock %}

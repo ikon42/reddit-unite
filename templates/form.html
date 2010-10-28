@@ -5,12 +5,11 @@
             <h1>{{ title }}</h1>
             <p>
             {{ instructions }}
-            </p>{% if form %}
+            </p>{% block form %}{% if form %}
             <form method="POST" action="">
                 <!-- WTForms FTW! -->
                 <dl>{% for field in form %}
                     {{ render_field(field)|indent(20) }}
                 {% endfor %}</dl>
                 <button type="submit">Submit</button>
-            </form>{% endif %}
-{% endblock %}
+            </form>{% endif %}{% endblock %}{% endblock %}

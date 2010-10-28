@@ -30,3 +30,10 @@ class prefs_form(Form):
     country = BooleanField('Country')
     bio = BooleanField('Bio')
 
+class search_form(Form):
+    query = TextField('Search')
+
+
+class contact_form(Form):
+    subject = TextField('Subject')
+    message = TextAreaField('Message')

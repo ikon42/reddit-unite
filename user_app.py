@@ -13,20 +13,36 @@ from google.appengine.api.memcache import delete as mdel
 from google.appengine.ext import db
 
 from models import User
-from models import User_Bio
-from models import User_Permissions
 
 from forms import profile_form
 from forms import prefs_form
+from forms import contact_form
 
 urls = (
+    '', 'redir',
+    '/([^a-zA-Z].+)', 'index',
+    '/([^a-zA-Z].+)/contact', 'contact',
     '/profile', 'profile',
     '/preferences', 'preferences',
-    '/([^a-zA-Z].+)', 'index',
-    '', 'redir',
 )
 
 t = template.env.get_template('form.html')
+
+class contact:
+    def GET(self, user_id):
+        if user_exists(user_id):
+            f = contact_form()
+            return t.render(util.data(
+                title='Get in touch!',
+                instructions='''You will always reveal your email address
+            when you send a message!''',
+                form=f,
+            ))
+        else:
+            return t.render(util.data(
+                title='No such user',
+            ))
+
 
 class profile:
     def GET(self):
@@ -34,16 +50,7 @@ class profile:
         if user:
             e = mget(key=user.user_id(), namespace='profile_data')
             if e is None:
-                try:
-                    q = User.all().filter('id', user.user_id()).fetch(1)
-                    e = q[0]
-                except:
-                    u = User(
-                        id=user.user_id(),
-                        user=user,
-                        nickname=user.nickname(),
-                    )
-                    e = db.get(u.put())
+                e = util.get_user(user=user)
                 mset(key=user.user_id(), value=e, time=10, namespace='profile_data')
             f = profile_form()
             if e.bio:
@@ -96,16 +103,7 @@ class profile:
             grant us permission to share it in your Preferences)''',
             ))
         else:
-            q = User.all().filter('id', user.user_id()).fetch(1)
-            e = q[0]
-            if e.bio is None or e.shared is None:
-                if e.bio is None:
-                    m = User_Bio().put()
-                    e.bio = m
-                if e.shared is None:
-                    p = User_Permissions().put()
-                    e.shared = p
-                e = db.get(db.put(e))
+            e = util.get_user(user=user)
             if e.nickname:
                 e.nickname = f.nickname.data
                 db.put(e)
@@ -127,8 +125,7 @@ class preferences:
         if user:
             e = mget(key=user.user_id(), namespace='profile_data')
             if e is None:
-                q = User.all().filter('id', user.user_id()).fetch(1)
-                e = q[0]
+                e = get_user(user)
                 mset(key=user.user_id(), value=e, namespace='profile_data')
             
             if e.shared != None:
@@ -190,8 +187,7 @@ class preferences:
             for o in prefs:
                 if not prefs[o]:
                     del f_prefs[o]
-            q = User.all().filter('id', user.user_id()).fetch(1)
-            e = q[0]
+            e = util.get_user(user=user)
             e.shared.public = list(f_prefs)
             e.shared.put()
             mdel(key=user.user_id(), namespace='profile_data')
@@ -204,22 +200,12 @@ class index:
         t = template.env.get_template('profile.html')
         e = mget(key=user_id, namespace='profile_data')
         if e is None:
-            q = User.all().filter('id', user_id).fetch(1)
-            e = q[0]
+            e = util.get_user(user_id=user_id)
             mset(key=user_id, value=e, namespace='profile_data')
-        m = e.bio
+        user_info = util.strip_private_data(e)
+        web.debug(user_info)
         return t.render(util.data(
-            info={
-                'nickname': e.nickname if 'nickname' in e.shared.public else '',
-                'first_name': m.first_name if 'first_name' in e.shared.public else '',
-                'middle_name': m.middle_name if 'middle_name' in e.shared.public else '',
-                'last_name': m.last_name if 'last_name' in e.shared.public else '',
-                'city': m.city if 'city' in e.shared.public else '',
-                'state': m.state if 'state' in e.shared.public else '',
-                'postal_code': m.postal_code if 'postal_code' in e.shared.public else '',
-                'country': m.country if 'country' in e.shared.public else '',
-                'bio': markdown(m.bio) if 'bio' in e.shared.public else '',
-            }
+            info=user_info
         ))
 
 
