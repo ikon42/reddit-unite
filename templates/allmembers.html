@@ -6,15 +6,13 @@
         {{ instructions }}
         <table border=1>
         <tr>
-        <td>Reddit Username</td>
+        <td title="Probably == their Reddit username">Username</td>
         <td>First Name</td>
         <td>Middle Name</td>
         <td>Last Name</td>
         <td>City</td>
         <td>State</td>
-        <td>Postal Code</td>
         <td>Country</td>
-        <td>Bio</td>
         </tr>
         {% for i in users %}
         <tr>
@@ -24,9 +22,7 @@
         <td>{{i.last_name}}</td>
         <td>{{i.city}}</td>
         <td>{{i.state}}</td>
-        <td>{{i.postal_code}}</td>
         <td>{{i.country}}</td>
-        <td>{{i.bio}}</td>
         </tr>
         {% endfor %}
         </table>
