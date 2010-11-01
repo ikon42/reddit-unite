@@ -11,25 +11,28 @@ from forms import search_form
 urls = (
     '/', 'index',
     '', 'redis',
-    '/allmembers', 'allmembers',
+    '/list/([a-zA-Z0-9_]+)', 'user_list',
     '/map/(.*)', 'user_map',
 )
 
-class allmembers:
+class user_list:
     """This class displays all members."""
-    def GET(self):
-        t = template.env.get_template('allmembers.html')
+    def GET(self, name):
+        t = template.env.get_template('user_list.html')
         userlist = []
-        for i in User.all():
-            x = util.stripPrivateData(i)
-            if x is not None:
-                userlist.append(x)
-
+        web.debug(name)
+        if (name.lower() == 'global'):
+            for i in User.all():
+                x = util.strip_private_data(i)
+                if x is not None:
+                    userlist.append(x)
+        else:
+            pass
         web.debug(userlist)
 
         return t.render(util.data(
             title='Display all members',
-            instructions='''This forms shows all members''',
+            instructions='''Public member listing''',
             users=userlist,
         ))
 

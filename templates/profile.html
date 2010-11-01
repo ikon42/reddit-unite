@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_permissionshelpers.html" import check_for %}
+{% from "_listing_helpers.html" import check_for %}
 
 {% block main %}
             <div class="vcard">
@@ -9,7 +9,7 @@
                     <span class="family-name">{{ info.last_name|title }} </span>{% endif %}
                     (<span class="nickname">{{ info.nickname }}</span>)
                 </h1>
-                <p class="label">{% if info.city %}{{ info.city|title }}, {% endif %}{{ check_for(info.state)|title }} {{ check_for(info.postal_code) }} {{ check_for(info.country)|title }}
+                <p class="label">{% if info.city %}{{ info.city }}, {% endif %}{{ check_for(info.state)|title }} {{ check_for(info.postal_code) }} {{ check_for(info.country) }}
                 </p>
                 {% if info.bio %}<p class="note">
                 {{ info.bio|indent(8) }}

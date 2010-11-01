@@ -5,6 +5,7 @@ import template
 import util
 
 from google.appengine.api import users
+from google.appengine.api.mail import EmailMessage
 
 from google.appengine.api.memcache import get as mget
 from google.appengine.api.memcache import set as mset
@@ -20,8 +21,8 @@ from forms import contact_form
 
 urls = (
     '', 'redir',
-    '/([^a-zA-Z].+)', 'index',
     '/([^a-zA-Z].+)/contact', 'contact',
+    '/([^a-zA-Z].+)', 'index',
     '/profile', 'profile',
     '/preferences', 'preferences',
 )
@@ -30,18 +31,40 @@ t = template.env.get_template('form.html')
 
 class contact:
     def GET(self, user_id):
-        if user_exists(user_id):
+        if util.user_exists(user_id):
+            t = template.env.get_template('contact.html')
             f = contact_form()
+            user = users.get_current_user()
             return t.render(util.data(
                 title='Get in touch!',
                 instructions='''You will always reveal your email address
             when you send a message!''',
                 form=f,
+                subject=' '.join([user.nickname(), 'wants to get in touch!']),
             ))
         else:
-            return t.render(util.data(
-                title='No such user',
-            ))
+            raise web.seeother('/' + user_id)
+    def POST(self, user_id):
+        if util.user_exists(user_id):
+            try:
+                user = users.get_current_user()
+                recip = util.get_user(user_id=user_id)
+            except:
+                return t.render(util.data(
+                    title='Could not send message!',
+                    instructions='''Make sure you are logged in and that
+                the user you are attempting to contact exists.'''
+                ))
+            f = contact_form()
+            if f.validate():
+                message = EmailMessage(
+                    sender=' '.join([user.nickname(), '<' + user.user.email + '>']),
+                    subject=' '.join([user.nickname(), 'wants to get in touch!']),
+                )
+                message.to = recip.user.email
+                message.body = f.message.data
+                web.debug(dir(message))
+        raise web.seeother('/' + user_id)
 
 
 class profile:
@@ -125,7 +148,7 @@ class preferences:
         if user:
             e = mget(key=user.user_id(), namespace='profile_data')
             if e is None:
-                e = get_user(user)
+                e = util.get_user(user)
                 mset(key=user.user_id(), value=e, namespace='profile_data')
             
             if e.shared != None:
@@ -162,9 +185,17 @@ class preferences:
             ))
     def POST(self):
         user = users.get_current_user()
-        d = web.input()
+        d = web.input(
+            first_name=False,
+            middle_name=False,
+            last_name=False,
+            city=False,
+            state=False,
+            postal_code=False,
+            country=False,
+            bio=False,
+        )
         f = profile_form(
-            #nickname=d.nickname,
             first_name=d.first_name,
             middle_name=d.middle_name,
             last_name=d.last_name,
@@ -181,14 +212,12 @@ class preferences:
                 instructions='Please indicate which items you wish to make public.',
             ))
         else:
-            logging.error(dir(f))
-            prefs = dict(f)
-            f_prefs = prefs.copy()
-            for o in prefs:
-                if not prefs[o]:
-                    del f_prefs[o]
+            prefs = []
+            for i in f:
+                if not i.data:
+                    prefs.append(i.name)
             e = util.get_user(user=user)
-            e.shared.public = list(f_prefs)
+            e.shared.public = prefs
             e.shared.put()
             mdel(key=user.user_id(), namespace='profile_data')
             raise web.seeother('/preferences')
@@ -198,11 +227,21 @@ class preferences:
 class index:
     def GET(self, user_id):
         t = template.env.get_template('profile.html')
-        e = mget(key=user_id, namespace='profile_data')
-        if e is None:
-            e = util.get_user(user_id=user_id)
-            mset(key=user_id, value=e, namespace='profile_data')
-        user_info = util.strip_private_data(e)
+        try:
+            e = mget(key=user_id, namespace='profile_data')
+            if e is None:
+                e = util.get_user(user_id=user_id)
+                mset(key=user_id, value=e, namespace='profile_data')
+            user_info = util.strip_private_data(e)
+        except AttributeError:
+            user_info = {
+                'nickname': '[deleted]',
+                'first_name': 'No',
+                'middle_name': 'such',
+                'last_name': 'user',
+                'city': 'reddit.com',
+                'country': 'The Internet',
+            }
         web.debug(user_info)
         return t.render(util.data(
             info=user_info
@@ -215,4 +254,3 @@ class redir:
 
 
 app = web.application(urls, locals())
-

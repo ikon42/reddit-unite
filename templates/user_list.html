@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_listing_helpers.html" import h_if_none %}
+
+{% block main %}
+            <h1>{{ title }}</h1>
+            <p>
+            {{ instructions }}
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th title="Probably == their Reddit username">Username</td>
+                        <th>First Name</td>
+                        <th>Last Name</td>
+                        <th>State</td>
+                        <th>Country</td>
+                    </tr>
+                </thead>
+                <tbody>{% for i in users %}
+                    <tr class="vcard">
+                        <td><a href="{{ site }}/user/{{ i.id }}">{{ h_if_none(i.nickname) }}</td>
+                        <td>{{ h_if_none(i.first_name) }}</td>
+                        <td>{{ h_if_none(i.last_name) }}</td>
+                        <td>{{ h_if_none(i.state) }}</td>
+                        <td>{{ h_if_none(i.country) }}</td>
+                    </tr>
+                {% endfor %}</tbody>
+            </table>{% endblock %}

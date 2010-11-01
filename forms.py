@@ -35,5 +35,4 @@ class search_form(Form):
 
 
 class contact_form(Form):
-    subject = TextField('Subject')
     message = TextAreaField('Message')

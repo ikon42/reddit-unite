@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block main %}
+            <h1>{{ title }}</h1>
+            <p>
+            {{ instructions }}
+            </p>{% block form %}{% if form %}
+            <form method="POST" action="">
+                <!-- WTForms FTW! -->
+                <dl>
+                    <dt>Subject</dt>
+                    <dd>{{ subject }}</dd>
+                    <dt>
+                        {{ form.message.label }}
+                    </dt>
+                    <dd>
+                        {{ form.message }}
+                    </dd>
+                </dl>
+                <button type="submit">Submit</button>
+            </form>{% endif %}{% endblock %}{% endblock %}

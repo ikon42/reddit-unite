@@ -18,7 +18,10 @@ def data(**kwargs):
     the template engine along with the information supplied by the
     different handlers.
     '''
-    data = {'user': {}}
+    data = {
+        'site': web.ctx.homedomain,
+        'user': {},
+    }
     user = users.get_current_user()
     if user:
         data['log_in_out'] = users.create_logout_url('/')
@@ -45,7 +48,10 @@ def strip_private_data(user):
     stored in the permissions then the user doesn't want to share anything
     """
     if user.shared != None: #Assume that none == share nowt
-        x = {'nickname':user.nickname}
+        x = {
+            'id': user.id,
+            'nickname': user.nickname,
+        }
         for attr in user.shared.public:
             try:
                 x[attr] = getattr(user.bio,attr)
