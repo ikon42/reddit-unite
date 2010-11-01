@@ -7,8 +7,6 @@ import util
 from google.appengine.api import users
 from google.appengine.api.mail import EmailMessage
 
-from google.appengine.api.memcache import get as mget
-from google.appengine.api.memcache import set as mset
 from google.appengine.api.memcache import delete as mdel
 
 from google.appengine.ext import db
@@ -71,10 +69,7 @@ class profile:
     def GET(self):
         user = users.get_current_user()
         if user:
-            e = mget(key=user.user_id(), namespace='profile_data')
-            if e is None:
-                e = util.get_user(user=user)
-                mset(key=user.user_id(), value=e, time=10, namespace='profile_data')
+            e = util.get_user(user=user)
             f = profile_form()
             if e.bio:
                 f = profile_form(
@@ -146,11 +141,7 @@ class preferences:
     def GET(self):
         user = users.get_current_user()
         if user:
-            e = mget(key=user.user_id(), namespace='profile_data')
-            if e is None:
-                e = util.get_user(user)
-                mset(key=user.user_id(), value=e, namespace='profile_data')
-            
+            e = util.get_user(user)
             if e.shared != None:
                 f = prefs_form(
                     first_name='first_name' in e.shared.public,
@@ -228,10 +219,7 @@ class index:
     def GET(self, user_id):
         t = template.env.get_template('profile.html')
         try:
-            e = mget(key=user_id, namespace='profile_data')
-            if e is None:
-                e = util.get_user(user_id=user_id)
-                mset(key=user_id, value=e, namespace='profile_data')
+            e = util.get_user(user_id=user_id)
             user_info = util.strip_private_data(e)
         except AttributeError:
             user_info = {

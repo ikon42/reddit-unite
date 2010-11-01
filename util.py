@@ -65,16 +65,18 @@ def strip_private_data(user):
 def get_user(user=None, user_id=None):
     '''Get a user from the DataStore using a User object or a user ID'''
     id = user.user_id() if user else user_id
-    try:
-        q = User.all().filter('id', id).fetch(1)
-        e = q[0]
-    except:
-        u = User(
-            id=id,
-            user=user,
-            nickname=user.nickname(),
-        )
-        e = db.get(u.put())
+    e = mget(key=id, namespace='profile_data')
+    if e is None:
+        try:
+            q = User.all().filter('id', id).fetch(1)
+            e = q[0]
+        except:
+            u = User(
+                id=id,
+                user=user,
+                nickname=user.nickname(),
+            )
+            e = db.get(u.put())
     if e.bio is None or e.shared is None:
         if e.bio is None:
             m = User_Bio().put()
@@ -83,6 +85,7 @@ def get_user(user=None, user_id=None):
             p = User_Permissions().put()
             e.shared = p
         e = db.get(db.put(e))
+    mset(key=id, value=e, time=10, namespace='profile_data')
     return e
 
 def user_exists(user_id):
