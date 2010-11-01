@@ -10,7 +10,7 @@
     </head>
     <body>
         <div class="site-header">
-            <h1 title="A Reddit Unite project"><a href="/">Connection Machine</a></h1>
+            <h1 title="A Reddit Unite project"><a href="{{ site }}">Connection Machine</a></h1>
             <h2 title="carlos AT projectbeyond.org">By indieinvader and friends</h2>
         </div>
         <div class="main block">{% block main %}{% endblock %}
@@ -19,13 +19,13 @@
             <h1>Get Connected!</h1>
             <ul>
                 <li>
-                    <h1>Hey, {% if logged_in %}<a title="Your public profile" href="/user/{{ user.id }}">{{ user.nickname }}</a>{% else%}you{% endif %}!</h1>
+                    <h1>Hey, {% if logged_in %}<a title="Your public profile" href="{{ site }}/user/{{ user.id }}">{{ user.nickname }}</a>{% else%}you{% endif %}!</h1>
                 </li>{% if logged_in %}
                 <li>
-                    <a href="/user/profile">Edit profile</a>
+                    <a href="{{ site }}/user/profile">Edit profile</a>
                 </li>
                 <li>
-                    <a href="/user/preferences">Preferences</a>
+                    <a href="{{ site }}/user/preferences">Preferences</a>
                 </li>{% endif %}
                 <li>
                     <a href="{{ log_in_out }}">{% if logged_in %}Log out{% else %}Log in/register{% endif %}</a>
@@ -36,12 +36,14 @@
                     <h1>More Info</h1>
                 </li>
                 <li>
-                    <a href="/directory/allmembers">Show All Members</a>
+                    <a href="{{ site }}/directory/list/global">Show All Members</a>
                 </li>
                 <li>Global Map</li>
                 <li>Locales</li>
                 <li>People in Your Area</li>
-                <li>FAQ</li>
+                <li>
+                    <a href="{{ site }}/faq/">FAQ</a>
+                </li>
             </ul>
             <ul>
                 <li>

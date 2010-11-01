@@ -27,9 +27,8 @@ class index:
 
 class faq:
     def GET(self):
-        raise web.notfound()
-        #t = template.env.get_template('faq.html')
-        #return t.render(util.data())
+        t = template.env.get_template('faq.html')
+        return t.render(util.data())
 
 
 app = web.application(urls, locals())
