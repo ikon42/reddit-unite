@@ -9,31 +9,35 @@ from models import User
 from forms import search_form
 
 urls = (
-    '/', 'index',
+    '/search/?', 'search',
     '', 'redis',
-    '/list/([a-zA-Z0-9_]+)', 'user_list',
-    '/map/(.*)', 'user_map',
+    '/([a-zA-Z0-9_]+)?/?', 'index',
+    '/map/(.*)/?', 'user_map',
 )
 
-class user_list:
-    """This class displays all members."""
+class index:
+    '''Displays a user list or a list of user lists'''
     def GET(self, name):
         t = template.env.get_template('user_list.html')
-        userlist = []
-        web.debug(name)
-        if (name.lower() == 'global'):
+        list_list = ['global'] # list_list should be user definable in the future
+        user_list = []
+        if (name is None):
+            return t.render(util.data(
+                title='User Lists',
+                instructions='[Missing]',
+                list_list=list_list,
+            ))
+        elif (name.lower() in list_list):
             for i in User.all():
                 x = util.strip_private_data(i)
                 if x is not None:
-                    userlist.append(x)
+                    user_list.append(x)
         else:
-            pass
-        web.debug(userlist)
-
+            raise web.notfound()
         return t.render(util.data(
             title='Display all members',
             instructions='''Public member listing''',
-            users=userlist,
+            users=user_list,
         ))
 
 
@@ -44,21 +48,38 @@ class user_map:
         return t.render(util.data())
 
 
-class index:
+class search:
     '''Allows users to search for other users based on public information'''
     def GET(self):
         q = web.input()
         t = template.env.get_template('search.html')
         f = search_form()
-        results = []
-        if q.query:
-            pass
-        return t.render(util.data(
-            title='Find who you\'re looking for!',
-            instructions='''(Doesn't work yet..)''',
-            form=f,
-            results=results if results else None,
-        ))
+        try:
+            if q.query:
+                results = []
+                user_list = []
+                query = q.query.split(' ')
+                for i in User.all():
+                    x = util.strip_private_data(i)
+                    if x is not None:
+                        user_list.append(x)
+                for p in user_list:
+                    for i in query:
+                        if i in dict(p).values():
+                            results.append(p)
+                return t.render(util.data(
+                    title='Find who you\'re looking for!',
+                    form=f,
+                    results=results if results else None,
+                ))
+            else:
+                web.debug('q.query doesn\'t exist and it didn\'t thow an exception!')
+                raise Warning('Odd, huh?')
+        except:
+            return t.render(util.data(
+                title='Find who you\'re looking for!',
+                form=f,
+            ))
 
 
 class redis:

@@ -134,6 +134,7 @@ class profile:
             e.bio.country = f.country.data or ''
             e.bio.bio = f.bio.data or ''
             e.bio.put()
+            mdel(key=user.user_id(), namespace='profile_data')
             raise web.seeother('/profile')
 
 
@@ -141,8 +142,8 @@ class preferences:
     def GET(self):
         user = users.get_current_user()
         if user:
-            e = util.get_user(user)
-            if e.shared != None:
+            e = util.get_user(user=user)
+            if e.shared is not None:
                 f = prefs_form(
                     first_name='first_name' in e.shared.public,
                     middle_name='middle_name' in e.shared.public,
@@ -186,6 +187,7 @@ class preferences:
             country=False,
             bio=False,
         )
+        web.debug(dict(d))
         f = profile_form(
             first_name=d.first_name,
             middle_name=d.middle_name,

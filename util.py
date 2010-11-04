@@ -57,7 +57,7 @@ def strip_private_data(user):
                 x[attr] = getattr(user.bio,attr)
             except AttributeError:
                 pass
-        web.debug(x)
+        #web.debug(x)
         return x 
     else:
         return None
