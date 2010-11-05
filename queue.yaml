@@ -1,0 +1,7 @@
+queue:
+- name: default
+  rate: 1/s
+
+- name: email-throttle
+  rate: 1800/d
+  bucket_size: 10

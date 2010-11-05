@@ -5,9 +5,12 @@ import template
 import util
 
 from google.appengine.api import users
-from google.appengine.api.mail import EmailMessage
-
 from google.appengine.api.memcache import delete as mdel
+
+try:
+    from google.appengine.api.labs import taskqueue
+except ImportError:
+    from google.appengine.api import taskqueue
 
 from google.appengine.ext import db
 
@@ -49,31 +52,35 @@ class contact:
         else:
             raise web.seeother('/' + user_id)
     def POST(self, user_id):
-        if util.user_exists(user_id):
-            try:
-                user = util.get_user(user=users.get_current_user())
-                recip = util.get_user(user_id=user_id)
-            except:
-                return t.render(util.data(
-                    title='Could not send message!',
-                    instructions='''Make sure you are logged in and that
-                the user you are attempting to contact exists.'''
-                ))
+        user = users.get_current_user()
+        if user:
             d = web.input()
-            web.debug(d.message)
             f = contact_form(message=d.message)
             if f.validate():
-                t = template.env.get_template('message.html')
-                message = EmailMessage(
-                    sender=' '.join([user.nickname, '<' + user.user.email() + '>']),
-                    subject='The Connection Machine: ' + ' '.join([user.nickname, 'wants to get in touch!']),
-                    to=recip.user.email(),
-                    reply_to=user.user.email(),
-                    body=t.render(msg=f.message.data, sender=user.id, site=web.ctx.homedomain, plain_text=True),
-                    html=t.render(msg=f.message.data, sender=user.id, site=web.ctx.homedomain),
+                taskqueue.add(
+                    url='/task/send_mail',
+                    queue_name='email-throttle',
+                    params={
+                        'sender_id': user.user_id(),
+                        'recipient_id': user_id,
+                        'message': f.message.data,
+                    },
                 )
-                message.send()
-        raise web.seeother('/' + user_id)
+                raise web.seeother('/' + user_id)
+            else:
+                return t.render(util.data(
+                    title='Get in touch!',
+                    instructions='''You will always reveal your email address
+                when you send a message!''',
+                    form=f,
+                    subject=' '.join([user.nickname(), 'wants to get in touch!']),
+                ))
+        else:
+            return t.render(util.data(
+                title='Not allowed!',
+                instructions='You must be signed in to send messages!',
+            ))
+        
 
 
 class profile:
@@ -98,7 +105,7 @@ class profile:
                 form=f,
                 title='Edit Profile',
                 instructions='''Please enter whatever information you feel comfortable
-            sharing. (Please note that your information is not shared.public until you
+            sharing. (Please note that your information is not public until you
             grant us permission to share it in your Preferences)''',
             ))
         else:

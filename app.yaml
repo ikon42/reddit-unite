@@ -21,6 +21,11 @@ handlers:
   static_dir: static/
   secure: always
 
+- url: /task/.*
+  script: worker/main.py
+  login: admin
+  secure: always
+
 - url: /.*
   script: main.py
   secure: always
