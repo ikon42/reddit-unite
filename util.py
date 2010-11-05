@@ -21,7 +21,7 @@ def get_gravatar(email):
         return url
     else:
         url = ''.join([
-            'http://www.gravatar.com/avatar/',
+            'https://secure.gravatar.com/avatar/',
             md5(email.lower()).hexdigest(),
             '?',
             urlencode({'s': '150', 'd': 'retro'}),
