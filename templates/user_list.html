@@ -6,23 +6,35 @@
             <p>
             {{ instructions }}
             </p>
-            <table>
+            <table>{% if list_list %}
                 <thead>
                     <tr>
-                        <th title="Probably == their Reddit username">Username</td>
-                        <th>First Name</td>
-                        <th>Last Name</td>
-                        <th>State</td>
-                        <th>Country</td>
+                        <th>Name</th>
+                        <th>Scope</th>
+                    </tr>
+                </thead>
+                <tbody>{% for li in list_list|sort %}
+                    <tr>
+                        <td><a href="{{ site }}/directory/{{ li.name }}/">{{ li.name|title }}</a></td>
+                        <td>{{ h_if_none(li.scope) }}</td>
+                    </tr>
+                {% endfor %}</tbody>{% else %}
+                <thead>
+                    <tr>
+                        <th title="Probably == their Reddit username">Username</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>State</th>
+                        <th>Country</th>
                     </tr>
                 </thead>
                 <tbody>{% for i in users %}
                     <tr class="vcard">
-                        <td><a href="{{ site }}/user/{{ i.id }}">{{ h_if_none(i.nickname) }}</td>
+                        <td><a href="{{ site }}/user/{{ i.id }}">{{ h_if_none(i.nickname) }}</a></td>
                         <td>{{ h_if_none(i.first_name) }}</td>
                         <td>{{ h_if_none(i.last_name) }}</td>
                         <td>{{ h_if_none(i.state) }}</td>
                         <td>{{ h_if_none(i.country) }}</td>
                     </tr>
-                {% endfor %}</tbody>
+                {% endfor %}</tbody>{% endif %}
             </table>{% endblock %}

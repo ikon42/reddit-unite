@@ -33,19 +33,25 @@ class contact:
             t = template.env.get_template('contact.html')
             f = contact_form()
             user = users.get_current_user()
-            return t.render(util.data(
-                title='Get in touch!',
-                instructions='''You will always reveal your email address
-            when you send a message!''',
-                form=f,
-                subject=' '.join([user.nickname(), 'wants to get in touch!']),
-            ))
+            if user:
+                return t.render(util.data(
+                    title='Get in touch!',
+                    instructions='''You will always reveal your email address
+                when you send a message!''',
+                    form=f,
+                    subject=' '.join([user.nickname(), 'wants to get in touch!']),
+                ))
+            else:
+                return t.render(util.data(
+                    title='Not allowed!',
+                    instructions='You must be signed in to send messages!',
+                ))
         else:
             raise web.seeother('/' + user_id)
     def POST(self, user_id):
         if util.user_exists(user_id):
             try:
-                user = users.get_current_user()
+                user = util.get_user(user=users.get_current_user())
                 recip = util.get_user(user_id=user_id)
             except:
                 return t.render(util.data(
@@ -55,13 +61,15 @@ class contact:
                 ))
             f = contact_form()
             if f.validate():
+                t = template.env.get_template('message.html')
                 message = EmailMessage(
                     sender=' '.join([user.nickname(), '<' + user.user.email + '>']),
-                    subject=' '.join([user.nickname(), 'wants to get in touch!']),
+                    subject='The Connection Machine:' + ' '.join([user.user.nickname, 'wants to get in touch!']),
+                    to=recip.user.email,
+                    reply_to=user.user.email,
+                    body=t.render(msg=f.message.data, sender=user.id, site=web.ctx.homedomain),
                 )
-                message.to = recip.user.email
-                message.body = f.message.data
-                web.debug(dir(message))
+                message.send()
         raise web.seeother('/' + user_id)
 
 

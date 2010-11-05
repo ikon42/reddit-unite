@@ -19,15 +19,22 @@ class index:
     '''Displays a user list or a list of user lists'''
     def GET(self, name):
         t = template.env.get_template('user_list.html')
-        list_list = ['global'] # list_list should be user definable in the future
+        list_list = [ # list_list should be generated somehow
+            'global', 'Lists all users from all locales.',
+        ]
         user_list = []
         if (name is None):
             return t.render(util.data(
                 title='User Lists',
-                instructions='[Missing]',
-                list_list=list_list,
+                instructions='''Users are grouped into "user lists" that group them geographically.
+            These lists are automatically generated and will change based upon
+            the relative size of various user populations.''',
+                list_list=map(
+                    lambda (li): {'name': li[0], 'scope': li[1]},
+                    zip(*[list_list[i::2] for i in range(2)]),
+                ),
             ))
-        elif (name.lower() in list_list):
+        elif (name.lower() in list_list[::2]):
             for i in User.all():
                 x = util.strip_private_data(i)
                 if x is not None:

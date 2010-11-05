@@ -89,6 +89,7 @@ def get_user(user=None, user_id=None):
     return e
 
 def user_exists(user_id):
+    '''Checks for the existence of a particular user.'''
     try:
         user = get_user(user_id=user_id)
         if user is None:
