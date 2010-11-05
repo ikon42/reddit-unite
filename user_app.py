@@ -59,15 +59,17 @@ class contact:
                     instructions='''Make sure you are logged in and that
                 the user you are attempting to contact exists.'''
                 ))
-            f = contact_form()
+            d = web.input()
+            f = contact_form(message=d.message)
             if f.validate():
                 t = template.env.get_template('message.html')
                 message = EmailMessage(
                     sender=' '.join([user.nickname, '<' + user.user.email() + '>']),
-                    subject='The Connection Machine:' + ' '.join([user.nickname, 'wants to get in touch!']),
+                    subject='The Connection Machine: ' + ' '.join([user.nickname, 'wants to get in touch!']),
                     to=recip.user.email(),
                     reply_to=user.user.email(),
-                    body=t.render(msg=f.message.data, sender=user.id, site=web.ctx.homedomain),
+                    body=t.render(msg=f.message.data, sender=user.id, site=web.ctx.homedomain, plain_text=True),
+                    html=t.render(msg=f.message.data, sender=user.id, site=web.ctx.homedomain)
                 )
                 message.send()
         raise web.seeother('/' + user_id)
@@ -91,8 +93,6 @@ class profile:
                     country=e.bio.country,
                     bio=e.bio.bio,
                 )
-                import logging
-                logging.error(f)
             return t.render(util.data(
                 form=f,
                 title='Edit Profile',
@@ -195,7 +195,6 @@ class preferences:
             country=False,
             bio=False,
         )
-        web.debug(dict(d))
         f = profile_form(
             first_name=d.first_name,
             middle_name=d.middle_name,
@@ -213,10 +212,7 @@ class preferences:
                 instructions='Please indicate which items you wish to make public.',
             ))
         else:
-            prefs = []
-            for i in f:
-                if not i.data:
-                    prefs.append(i.name)
+            prefs = [i.name for i in f if i.data]
             e = util.get_user(user=user)
             e.shared.public = prefs
             e.shared.put()

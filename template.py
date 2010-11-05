@@ -17,7 +17,8 @@ class Markdown2Extension(jinja2.ext.Extension):
         environment.extend(
             markdowner=markdown2.Markdown()
         )   
-
+    def _markdown_support(self, caller):
+        return self.environment.markdowner.convert(caller()).strip()
     def parse(self, parser):
         lineno = parser.stream.next().lineno
         body = parser.parse_statements(
@@ -31,8 +32,6 @@ class Markdown2Extension(jinja2.ext.Extension):
             body,
         ).set_lineno(lineno)
 
-    def _markdown_support(self, caller):
-        return self.environment.markdowner.convert(caller()).strip()
 
 env = Environment(
     loader=FileSystemLoader(template_dir),
