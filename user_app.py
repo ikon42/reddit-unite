@@ -63,10 +63,10 @@ class contact:
             if f.validate():
                 t = template.env.get_template('message.html')
                 message = EmailMessage(
-                    sender=' '.join([user.nickname, '<' + user.user.email + '>']),
-                    subject='The Connection Machine:' + ' '.join([user.user.nickname, 'wants to get in touch!']),
-                    to=recip.user.email,
-                    reply_to=user.user.email,
+                    sender=' '.join([user.nickname, '<' + user.user.email() + '>']),
+                    subject='The Connection Machine:' + ' '.join([user.nickname, 'wants to get in touch!']),
+                    to=recip.user.email(),
+                    reply_to=user.user.email(),
                     body=t.render(msg=f.message.data, sender=user.id, site=web.ctx.homedomain),
                 )
                 message.send()
