@@ -70,7 +70,7 @@ class contact:
                     to=recip.user.email(),
                     reply_to=user.user.email(),
                     body=t.render(msg=f.message.data, sender=user.id, site=web.ctx.homedomain, plain_text=True),
-                    #html=t.render(msg=f.message.data, sender=user.id, site=web.ctx.homedomain),
+                    html=t.render(msg=f.message.data, sender=user.id, site=web.ctx.homedomain),
                 )
                 message.send()
         raise web.seeother('/' + user_id)

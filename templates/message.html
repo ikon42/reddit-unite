@@ -1,5 +1,5 @@
 {% if plain_text %}
-{{ message }}
+{{ msg }}
 
 ---
 FYI: Your privacy has *not* been comprimised:
@@ -7,8 +7,8 @@ The sender will not find out your email address unless you respond to this messa
 Respond Anonymously: {{ site }}/user/{{ sender }}/contact/
 {% else %}
 <html>
-{{ message }}
 {% markdown %}
+{{ msg|safe }}
 
 ---
 FYI: Your privacy has *not* been comprimised:
