@@ -60,6 +60,7 @@ class contact:
                 the user you are attempting to contact exists.'''
                 ))
             d = web.input()
+            web.debug(d.message)
             f = contact_form(message=d.message)
             if f.validate():
                 t = template.env.get_template('message.html')
@@ -69,7 +70,7 @@ class contact:
                     to=recip.user.email(),
                     reply_to=user.user.email(),
                     body=t.render(msg=f.message.data, sender=user.id, site=web.ctx.homedomain, plain_text=True),
-                    html=t.render(msg=f.message.data, sender=user.id, site=web.ctx.homedomain)
+                    #html=t.render(msg=f.message.data, sender=user.id, site=web.ctx.homedomain),
                 )
                 message.send()
         raise web.seeother('/' + user_id)
@@ -236,7 +237,6 @@ class index:
                 'city': 'reddit.com',
                 'country': 'The Internet',
             }
-        web.debug(user_info)
         return t.render(util.data(
             info=user_info
         ))

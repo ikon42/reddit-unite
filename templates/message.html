@@ -1,20 +1,21 @@
 {% if plain_text %}
 {{ message }}
+
 ---
 FYI: Your privacy has *not* been comprimised:
 The sender will not find out your email address unless you respond to this message.
 Respond Anonymously: {{ site }}/user/{{ sender }}/contact/
 {% else %}
 <html>
-{% markdown %}
 {{ message }}
-{% endmarkdown %}
-    <hr />
-    <p>FYI: Your privacy has *not* been comprimised:</p>
+{% markdown %}
 
-    <p>The sender will not find out your email address unless you respond to this message.</p>
-    <p>
-        <a href="{{ site }}/user/{{ sender }}/contact/">Respond Anonymously!</a>
-    </p>
+---
+FYI: Your privacy has *not* been comprimised:
+
+The sender will not find out your email address unless you respond to this message.
+
+[Respond Anonymously!]({{ site }}/user/{{ sender }}/contact/)
+{% endmarkdown %}
 </html>
 {% endif %}
