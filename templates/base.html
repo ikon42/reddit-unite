@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
     <head profile="http://www.w3.org/2006/03/hcard">
-        <title>Reddit Unite!</title>
+        <title>The Connection Machine</title>
         <link
             rel="stylesheet"
             type="text/css"
             href="/static/css/style.css"
         />
+        <!-- enhancements.js? -->
     </head>
     <body>
         <div class="site-header">
             <h1 title="A Reddit Unite project"><a href="{{ site }}">Connection Machine</a></h1>
-            <h2 title="carlos AT projectbeyond.org">By indieinvader and friends</h2>
+            <h2>By indieinvader and friends</h2>
         </div>
         <div class="main block">{% block main %}{% endblock %}
         </div>
@@ -33,33 +34,32 @@
             </ul>
             <ul>
                 <li>
-                    <h1>More Info</h1>
+                    <h1>
+                        <a href="{{ site }}/directory/">User Lists</a>
+                    </h1>
                 </li>
                 <li>
-                    <a href="{{ site }}/directory/list/global">Show All Members</a>
+                    <a href="{{ site }}/directory/global/">Show All Members</a>
                 </li>
-                <li>Global Map</li>
-                <li>Locales</li>
-                <li>People in Your Area</li>
                 <li>
-                    <a href="{{ site }}/faq/">FAQ</a>
+                    <a href="{{ site }}/directory/local/">People in your area</a>
                 </li>
             </ul>
             <ul>
                 <li>
-                    <h1>More Reddit Unite:</h1>
+                    <h1>Maps</h1>
+                </li>
+                <li>Coming soon</li>
+            </ul>
+            <ul>
+                <li>
+                    <h1>Meta</h1>
                 </li>
                 <li>
-                    <a href="http://www.reddit.com/r/unite">reddit</a>
+                    <a href="{{ site }}/faq/">FAQ</a>
                 </li>
                 <li>
-                    <a href="http://unite-reddit.org/">home</a>
-                </li>
-                <li>
-                    <a href="http://wiki.unite-reddit.org">wiki</a>
-                </li>
-                <li>
-                    <a href="http://github.com/indieinvader/reddit-unite">GitHub</a>
+                    <a href="{{ site }}/user/us/contact/">Contact Us</a>
                 </li>
             </ul>
         </div>
@@ -68,6 +68,20 @@
                 <h1>
                 All data held by this service is private and will not be released to anyone without user consent.
                 </h1>
+            </li>
+        </ul>
+        <ul class="footbar">
+            <li>
+                <a href="http://unite-reddit.org/">Unite-Reddit.org</a>
+            </li>
+            <li>
+                <a href="http://wiki.unite-reddit.org">Wiki</a>
+            </li>
+            <li>
+                <a href="http://github.com/indieinvader/reddit-unite">GitHub</a>
+            </li>
+            <li>
+                <a href="http://www.reddit.com/r/unite">/r/unite</a>
             </li>
         </ul>
     </body>

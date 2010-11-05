@@ -10,6 +10,7 @@ body {
 }
 .action {
     margin-top: 15px;
+    border-left: 3px solid #ccc;
 }
 /* Headers
 --------------------------------------------------------------------- */
@@ -36,11 +37,13 @@ h1, h2, h3, h4, h5, h6, th, dt {
 }
 .main h1 + p {
 	margin: 0 0 1em 0;
+	text-indent: 0;
 }
 /* Text
 --------------------------------------------------------------------- */
 .block p {
     margin-top: 1em;
+    text-indent: 1.5em;
 }
 /* Lists
 --------------------------------------------------------------------- */
@@ -48,6 +51,12 @@ h1, h2, h3, h4, h5, h6, th, dt {
     display: inline-block;
     margin-top: 5px; margin-right: 15px;
     vertical-align: top;
+}
+.action ul li {
+	margin-left: 1.5em;
+}
+.action ul li:first-child {
+	margin-left: 0;
 }
 .footbar {
     clear: both;
@@ -80,6 +89,15 @@ h1, h2, h3, h4, h5, h6, th, dt {
 form textarea {
 	width: 100%; height: 10em;
 }
+/* Profile
+--------------------------------------------------------------------- */
+.main .vcard img {
+	float: right;
+	padding: 0 0 5px 10px;
+}
+.main .vcard img + p {
+	text-indent: 0;
+}
 /* Footer to side if too wide
 --------------------------------------------------------------------- */
 @media only screen and (min-width: 1200px) {
@@ -88,7 +106,7 @@ form textarea {
         margin: 0 auto;
     }
     .action > h1 {
-        text-align: center;
+        text-align: left;
     }
     .main {
         float: left;
@@ -100,6 +118,9 @@ form textarea {
         width: 39%;
         margin: 0 0 0 1%;
     }
+    .action > * {
+		margin-left: 25px;
+	}
     .action ul {
         display: block;
         margin-top: 15px; margin-right: 0;

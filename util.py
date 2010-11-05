@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import web
-
+from urllib import urlencode
+from hashlib import md5
 from google.appengine.api import users
 
 from google.appengine.api.memcache import get as mget
@@ -12,6 +13,21 @@ from google.appengine.ext import db
 from models import User
 from models import User_Bio
 from models import User_Permissions
+
+def get_gravatar(email):
+    '''Generates a gravatar image url for the passed email address'''
+    url = mget(key=email, namespace='gravatars')
+    if url is not None:
+        return url
+    else:
+        url = ''.join([
+            'http://www.gravatar.com/avatar/',
+            md5(email.lower()).hexdigest(),
+            '?',
+            urlencode({'s': '150', 'd': 'retro'}),
+        ])
+        mset(key=email, value=url, namespace='gravatars')
+        return url
 
 def data(**kwargs):
     '''Makes sure that certain pieces of information are always sent to
@@ -37,6 +53,7 @@ def data(**kwargs):
             data['user']['nickname'] = nickname
         except:
             data['user']['nickname'] = user.nickname()
+        data['user']['gravatar'] = get_gravatar(user.email())
     else:
         data['log_in_out'] = users.create_login_url('/')
     data.update(kwargs)
@@ -57,7 +74,6 @@ def strip_private_data(user):
                 x[attr] = getattr(user.bio,attr)
             except AttributeError:
                 pass
-        #web.debug(x)
         return x 
     else:
         return None
