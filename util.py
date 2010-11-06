@@ -17,7 +17,7 @@ from models import User_Permissions
 def get_user(user=None, user_id=None):
     '''Get a user from the DataStore using a User object or a user ID'''
     id = user.user_id() if user else user_id
-    if id is 'us':
+    if id == 'us':
         return False
     else:
         e = mget(key=id, namespace='profile_data')
@@ -83,7 +83,7 @@ def data(**kwargs):
             data['user']['nickname'] = nickname
         except:
             data['user']['nickname'] = user.nickname()
-        data['gravatar'] = get_gravatar(get_user(user_id=data['user_id']).user.email() or 'us')
+        data['gravatar'] = get_gravatar(get_user(user_id=data['user_id'] or 'us').user.email() or 'us')
     else:
         data['log_in_out'] = users.create_login_url('/')
         data['gravatar'] = get_gravatar('user@example.com')
