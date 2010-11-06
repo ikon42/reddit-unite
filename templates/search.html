@@ -12,9 +12,9 @@
                         <ul>
                             <li>From: {% if item.location %}{{ item.location }}{% else %}Unknown{% endif %}</li>
                             {% if item.bio %}<li>
-                                <p>
-                                {{ item.bio }}
-                                </p>
+{% filter truncate() %}{% filter indent(20) %}{% filter wordwrap() %}{% markdown %}
+{{ item.bio }}
+{% endmarkdown %}{% endfilter %}{% endfilter %}{% endfilter %}
                             </li>{% endif %}
                     </li>{% endfor %}
                 </ul>
