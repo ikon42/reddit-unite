@@ -22,17 +22,18 @@ from forms import contact_form
 
 urls = (
     '', 'redir',
-    '/([^a-zA-Z].+)/contact', 'contact',
-    '/([^a-zA-Z].+)', 'index',
-    '/profile', 'profile',
-    '/preferences', 'preferences',
+    '/([^a-zA-Z].+|us)/contact/?', 'contact',
+    '/([^a-zA-Z].+|us)/?', 'index',
+    '/profile/?', 'profile',
+    '/preferences/?', 'preferences',
 )
 
 t = template.env.get_template('form.html')
 
 class contact:
+    '''/user/[user_id]/contact handler'''
     def GET(self, user_id):
-        if util.user_exists(user_id):
+        if util.user_exists(user_id.lower()) or user_id.lower() == 'us':
             t = template.env.get_template('contact.html')
             f = contact_form()
             user = users.get_current_user()
@@ -50,13 +51,13 @@ class contact:
                     instructions='You must be signed in to send messages!',
                 ))
         else:
-            raise web.seeother('/' + user_id)
+            raise web.notfound()
     def POST(self, user_id):
         user = users.get_current_user()
         if user:
             d = web.input()
             f = contact_form(message=d.message)
-            if f.validate():
+            if f.validate() and util.user_exists(user_id.lower()):
                 taskqueue.add(
                     url='/task/send_mail',
                     queue_name='email-throttle',
@@ -66,7 +67,18 @@ class contact:
                         'message': f.message.data,
                     },
                 )
-                raise web.seeother('/' + user_id)
+                raise web.seeother('/' + user_id + '#message_sent')
+            elif f.validate() and user_id.lower() == 'us':
+                taskqueue.add(
+                    url='/task/send_mail',
+                    queue_name='email-throttle',
+                    params={
+                        'sender_id': user.user_id(),
+                        'recipient_id': 'us',
+                        'message': f.message.data,
+                    }
+                )
+                raise web.seeother('/' + user_id + '#message_sent')
             else:
                 return t.render(util.data(
                     title='Get in touch!',
@@ -84,6 +96,7 @@ class contact:
 
 
 class profile:
+    '''User profile handler'''
     def GET(self):
         user = users.get_current_user()
         if user:
@@ -155,6 +168,7 @@ class profile:
 
 
 class preferences:
+    '''User preferences handler'''
     def GET(self):
         user = users.get_current_user()
         if user:
@@ -230,22 +244,34 @@ class preferences:
 
 
 class index:
+    '''Display a users profile'''
     def GET(self, user_id):
         t = template.env.get_template('profile.html')
-        try:
-            e = util.get_user(user_id=user_id)
-            user_info = util.strip_private_data(e)
-        except AttributeError:
+        if user_id.lower() == 'us':
             user_info = {
-                'nickname': '[deleted]',
-                'first_name': 'No',
-                'middle_name': 'such',
-                'last_name': 'user',
-                'city': 'reddit.com',
-                'country': 'The Internet',
+                'nickname': 'Mr. Roboto',
+                'first_name': 'The',
+                'middle_name': 'Connection',
+                'last_name': 'Machine',
+                'city': 'Google App Engine',
+                'state': 'The Internet',
             }
+        else:
+            try:
+                e = util.get_user(user_id=user_id.lower())
+                user_info = util.strip_private_data(e)
+            except AttributeError:
+                user_info = {
+                    'nickname': '[deleted]',
+                    'first_name': 'No',
+                    'middle_name': 'such',
+                    'last_name': 'user',
+                    'city': 'reddit.com',
+                    'state': 'The Internet',
+                }
         return t.render(util.data(
-            info=user_info
+            info=user_info,
+            user_id=user_id,
         ))
 
 

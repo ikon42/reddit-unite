@@ -22,7 +22,7 @@ class send_mail:
         message = EmailMessage(
             sender=' '.join([
                 sender.nickname,
-                '<' + sender.user.email() + '>'
+                '<' + (sender.user.email() or 'carlos@projectbeyond.org') + '>'
             ]),
             subject=' '.join([
                 'The Connection Machine:',
@@ -30,16 +30,16 @@ class send_mail:
                 'wants to get in touch!'
             ]),
             to=recipient.user.email(),
-            reply_to=sender.user.email(),
+            reply_to=sender.user.email() or 'carlos@projectbeyond.org',
             body=t.render(
                 msg=d.message,
-                sender=sender.id,
+                sender=sender.id or 'us',
                 site=web.ctx.homedomain,
                 plain_text=True
             ),
             html=t.render(
                 msg=d.message,
-                sender=sender.id,
+                sender=sender.id or 'us',
                 site=web.ctx.homedomain
             ),
         )

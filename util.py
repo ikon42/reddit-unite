@@ -14,6 +14,35 @@ from models import User
 from models import User_Bio
 from models import User_Permissions
 
+def get_user(user=None, user_id=None):
+    '''Get a user from the DataStore using a User object or a user ID'''
+    id = user.user_id() if user else user_id
+    if id is 'us':
+        return False
+    else:
+        e = mget(key=id, namespace='profile_data')
+        if e is None:
+            try:
+                q = User.all().filter('id', id).fetch(1)
+                e = q[0]
+            except:
+                u = User(
+                    id=id,
+                    user=user,
+                    nickname=user.nickname(),
+                )
+                e = db.get(u.put())
+        if e.bio is None or e.shared is None:
+            if e.bio is None:
+                m = User_Bio().put()
+                e.bio = m
+            if e.shared is None:
+                p = User_Permissions().put()
+                e.shared = p
+            e = db.get(db.put(e))
+        mset(key=id, value=e, time=10, namespace='profile_data')
+        return e
+
 def get_gravatar(email):
     '''Generates a gravatar image url for the passed email address'''
     url = mget(key=email, namespace='gravatars')
@@ -22,7 +51,7 @@ def get_gravatar(email):
     else:
         url = ''.join([
             'https://secure.gravatar.com/avatar/',
-            md5(email.lower()).hexdigest(),
+            md5(email.lower() if email.lower() == 'us' else 'user@example.com').hexdigest(),
             '?',
             urlencode({'s': '150', 'd': 'retro'}),
         ])
@@ -38,6 +67,7 @@ def data(**kwargs):
         'site': web.ctx.homedomain,
         'user': {},
     }
+    data.update(kwargs)
     user = users.get_current_user()
     if user:
         data['log_in_out'] = users.create_logout_url('/')
@@ -53,10 +83,10 @@ def data(**kwargs):
             data['user']['nickname'] = nickname
         except:
             data['user']['nickname'] = user.nickname()
-        data['user']['gravatar'] = get_gravatar(user.email())
+        data['gravatar'] = get_gravatar(get_user(user_id=data['user_id']).user.email() or 'us')
     else:
         data['log_in_out'] = users.create_login_url('/')
-    data.update(kwargs)
+        data['gravatar'] = get_gravatar('user@example.com')
     return data
 
 def strip_private_data(user):
@@ -77,32 +107,6 @@ def strip_private_data(user):
         return x 
     else:
         return None
-
-def get_user(user=None, user_id=None):
-    '''Get a user from the DataStore using a User object or a user ID'''
-    id = user.user_id() if user else user_id
-    e = mget(key=id, namespace='profile_data')
-    if e is None:
-        try:
-            q = User.all().filter('id', id).fetch(1)
-            e = q[0]
-        except:
-            u = User(
-                id=id,
-                user=user,
-                nickname=user.nickname(),
-            )
-            e = db.get(u.put())
-    if e.bio is None or e.shared is None:
-        if e.bio is None:
-            m = User_Bio().put()
-            e.bio = m
-        if e.shared is None:
-            p = User_Permissions().put()
-            e.shared = p
-        e = db.get(db.put(e))
-    mset(key=id, value=e, time=10, namespace='profile_data')
-    return e
 
 def user_exists(user_id):
     '''Checks for the existence of a particular user.'''

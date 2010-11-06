@@ -4,7 +4,7 @@
 {% block main %}
             <h1>{{ info.nickname }}'s Profile</h1>
             <div class="vcard">
-                <img src="{{ user.gravatar }}" width="150" height="150" />
+                <img src="{{ gravatar }}" width="150" height="150" />
                 <p>{% filter indent(20) %}{% filter wordwrap() %}
 Hi, my name is <span class="fn n">{%- if info.first_name -%}
 <span class="given-name">{{ info.first_name|title }} </span>{%- endif -%}{%- if info.middle_name -%}

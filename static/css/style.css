@@ -41,15 +41,20 @@ h1, h2, h3, h4, h5, h6, th, dt {
     font-size: 18px;
     font-weight: normal;
 }
-.main h1 + p {
-	margin: 0 0 1em 0;
-	text-indent: 0;
+.main p + h1,
+.main dd + dt {
+	margin-top: 1em;
 }
 /* Text
 --------------------------------------------------------------------- */
 .block p {
     margin-top: 1em;
     text-indent: 1.5em;
+}
+.main h1 + p,
+.main dt + dd {
+	margin: 0 0 1em 0;
+	text-indent: 0;
 }
 /* Lists
 --------------------------------------------------------------------- */
