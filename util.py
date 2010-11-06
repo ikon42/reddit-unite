@@ -83,7 +83,10 @@ def data(**kwargs):
             data['user']['nickname'] = nickname
         except:
             data['user']['nickname'] = user.nickname()
-        data['gravatar'] = get_gravatar(get_user(user_id=data['user_id'] or 'us').user.email() or 'us')
+        try:
+            data['gravatar'] = get_gravatar(get_user(user_id=data['user_id'] or 'us').user.email())
+        except KeyError:
+            data['gravatar'] = get_gravatar('us')
     else:
         data['log_in_out'] = users.create_login_url('/')
         data['gravatar'] = get_gravatar('user@example.com')
