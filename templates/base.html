@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-    <head profile="http://www.w3.org/2006/03/hcard">
+    <head>
         <title>The Connection Machine</title>
         <link
             rel="stylesheet"
@@ -28,7 +28,7 @@
                     <a href="{{ site }}/user/preferences">Preferences</a>
                 </li>{% endif %}
                 <li>
-                    <a href="{{ log_in_out }}">{% if logged_in %}Log out{% else %}Log in/register{% endif %}</a>
+                    <a href="{{ log_in_out|escape }}">{% if logged_in %}Log out{% else %}Log in/register{% endif %}</a>
                 </li>
             </ul>
             <ul>
