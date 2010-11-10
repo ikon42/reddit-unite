@@ -159,7 +159,7 @@ class profile:
             e.bio.last_name = f.last_name.data or ''
             e.bio.city = f.city.data or ''
             e.bio.state = f.state.data or ''
-            e.bio.postal_code = f.postal_code.data or 0
+            e.bio.postal_code = f.postal_code.data or ''
             e.bio.country = f.country.data or ''
             e.bio.bio = f.bio.data or ''
             e.bio.put()
