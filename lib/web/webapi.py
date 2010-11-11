@@ -84,7 +84,7 @@ class Redirect(HTTPError):
             newloc = home + newloc
 
         headers = {
-            'Content-Type': 'text/html',
+            'Content-Type': 'text/html; charset=utf-8',
             'Location': newloc
         }
         HTTPError.__init__(self, status, headers, "")
@@ -124,7 +124,7 @@ class BadRequest(HTTPError):
     message = "bad request"
     def __init__(self):
         status = "400 Bad Request"
-        headers = {'Content-Type': 'text/html'}
+        headers = {'Content-Type': 'text/html; charset=utf-8'}
         HTTPError.__init__(self, status, headers, self.message)
 
 badrequest = BadRequest
@@ -134,7 +134,7 @@ class _NotFound(HTTPError):
     message = "not found"
     def __init__(self, message=None):
         status = '404 Not Found'
-        headers = {'Content-Type': 'text/html'}
+        headers = {'Content-Type': 'text/html; charset=utf-8'}
         HTTPError.__init__(self, status, headers, message or self.message)
 
 def NotFound(message=None):
@@ -160,7 +160,7 @@ class NoMethod(HTTPError):
     def __init__(self, cls=None):
         status = '405 Method Not Allowed'
         headers = {}
-        headers['Content-Type'] = 'text/html'
+        headers['Content-Type'] = 'text/html; charset=utf-8'
         
         methods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE']
         if cls:
@@ -177,7 +177,7 @@ class Gone(HTTPError):
     message = "gone"
     def __init__(self):
         status = '410 Gone'
-        headers = {'Content-Type': 'text/html'}
+        headers = {'Content-Type': 'text/html; charset=utf-8'}
         HTTPError.__init__(self, status, headers, self.message)
 
 gone = Gone
@@ -188,7 +188,7 @@ class _InternalError(HTTPError):
     
     def __init__(self, message=None):
         status = '500 Internal Server Error'
-        headers = {'Content-Type': 'text/html'}
+        headers = {'Content-Type': 'text/html; charset=utf-8'}
         HTTPError.__init__(self, status, headers, message or self.message)
 
 def InternalError(message=None):
